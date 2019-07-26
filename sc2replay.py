@@ -1,7 +1,7 @@
 from s2protocol import versions
 import mpyq
 
-archive = mpyq.MPQArchive('/home/realestkevin/ggtracker_271653.SC2Replay')
+archive = mpyq.MPQArchive('/home/realestkevin/AlphaStar_TLO_Game_1.SC2Replay')
 
 print(archive.files)
 
