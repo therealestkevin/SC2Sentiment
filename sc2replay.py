@@ -3,7 +3,7 @@ import mpyq
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 
-emojiTranslations = {"(ha🤔ppy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "😢",
+emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "😢",
                      "(sad)": "😢", ":@": "😠", "(angry)": "😠", ":O": "😲",
                      "(surprised)": "😲", ";P": "😜", "(silly)": "😜",
                      ":|": "😐", "(speechless)": "😐", ":]": "😍", "(inlove)": "😍",
@@ -35,7 +35,14 @@ analyzer = SentimentIntensityAnalyzer()
 for event in messageEvents:
     if event['_event'] == 'NNet.Game.SChatMessage':
         curMessage = str(event['m_string'])
+
         curMessage = curMessage[2: len(curMessage) - 1]
+
+        for key in emojiTranslations:
+            if key in curMessage:
+                curMessage = curMessage.replace(key, emojiTranslations[key])
+
+
         sentimentResult = analyzer.polarity_scores(curMessage)
         compoundSentiment = sentimentResult['compound']
         uid = event['_userid']
@@ -52,4 +59,4 @@ print(listmessages)
 print(sentimentTotals)
 print(compoundUserSentiments)
 
-print(analyzer.polarity_scores(""))
+print(analyzer.polarity_scores("😈"))
