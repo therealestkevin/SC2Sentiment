@@ -2,7 +2,7 @@ from s2protocol import versions
 import mpyq
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-
+races = {"Terran": [0, 0], "Zerg": [0, 0], "Protoss": [0, 0]}
 emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "😢",
                      "(sad)": "😢", ":@": "😠", "(angry)": "😠", ":O": "😲",
                      "(surprised)": "😲", ";P": "😜", "(silly)": "😜",
@@ -59,4 +59,13 @@ print(listmessages)
 print(sentimentTotals)
 print(compoundUserSentiments)
 
-print(analyzer.polarity_scores("😈"))
+# print(analyzer.polarity_scores("😈"))
+players = gameDetails['m_playerList']
+for i in range(len(compoundUserSentiments)):
+    curRace = str(players[i]['m_race'])
+
+    curRace = curRace[2: len(curRace) - 1]
+    races[curRace][0] += 1
+    races[curRace][1] += compoundUserSentiments[i]
+
+print(races)
