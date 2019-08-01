@@ -10,7 +10,7 @@ emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "�
                      "B-}": "😎", "(cool)": "😎", ":S": "😨", "(scared)": "😨",
                      "|-]": "😴", "(sleepy)": "😴", "(kiss)": "😘", "(devil)": "😈"
                      }
-archive = mpyq.MPQArchive('/home/realestkevin/ggtracker_265764.SC2Replay')
+archive = mpyq.MPQArchive('/home/realestkevin/Replays/ggtracker_272965.SC2Replay')
 
 print(archive.files)
 
@@ -18,7 +18,9 @@ contents = archive.header['user_data_header']['content']
 header = versions.latest().decode_replay_header(contents)
 baseBuild = header['m_version']['m_baseBuild']
 protocol = versions.build(baseBuild)
+contents = archive.read_file('replay.initData')
 
+lobbyDetails = protocol.decode_replay_initdata(contents)
 contents = archive.read_file('replay.details')
 
 gameDetails = protocol.decode_replay_details(contents)
@@ -54,7 +56,8 @@ for event in messageEvents:
 
 compoundUserSentiments = []
 for i in range(1, len(sentimentTotals), 2):
-    compoundUserSentiments.append(sentimentTotals[i]/sentimentTotals[i-1])
+    if sentimentTotals[i-1] > 0:
+        compoundUserSentiments.append(sentimentTotals[i]/sentimentTotals[i-1])
 print(listmessages)
 print(sentimentTotals)
 print(compoundUserSentiments)
