@@ -24,11 +24,11 @@ options.add_experimental_option("prefs", {
 browser = webdriver.Chrome(ChromeDriverManager().install())
 
 
-browser.get("https://gggreplays.com/matches/276649")
+browser.get("https://gggreplays.com/matches/219864")
 browser.find_element_by_xpath('//*[@id="heading"]/div[1]/div[3]/a/span').click()
 
 
-archive = mpyq.MPQArchive('H:/Downloads/ggtracker_276649.SC2Replay')
+archive = mpyq.MPQArchive('H:/Downloads/ggtracker_219864.SC2Replay')
 
 print(archive.files)
 
