@@ -16,16 +16,39 @@ emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "�
                      }
 options = Options()
 options.add_experimental_option("prefs", {
+  "download.default_directory": r"H:\Code\SC2Sentiment\TempReplays",
   "download.prompt_for_download": False,
   "download.directory_upgrade": True,
   "safebrowsing.enabled": True
 })
 
+testBaseAcidPlant = "https://gggreplays.com/matches#?map_name=Acid%20Plant%20LE&page=1"
+curPage = 1
+
 browser = webdriver.Chrome(ChromeDriverManager().install())
 
+browser.get(testBaseAcidPlant)
 
-browser.get("https://gggreplays.com/matches/219864")
-browser.find_element_by_xpath('//*[@id="heading"]/div[1]/div[3]/a/span').click()
+for i in range(2,12):
+
+    DateText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
+    PlayerText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[6]'.format(i)).text
+
+    if "A.I." not in PlayerText and PlayerText:
+
+        if "years" in DateText or "11 months" in DateText or "10 months" in DateText:
+
+            browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
+            browser.find_element_by_xpath('//*[@id="heading"]/div[1]/div[3]/a/span').click()
+
+
+            browser.back()
+
+
+
+
+
+
 
 
 archive = mpyq.MPQArchive('H:/Downloads/ggtracker_219864.SC2Replay')
