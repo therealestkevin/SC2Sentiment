@@ -6,6 +6,10 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import os
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 class obtainDownloadedName:
     @staticmethod
@@ -54,12 +58,14 @@ testBaseAcidPlant = "https://gggreplays.com/matches#?map_name=Acid%20Plant%20LE&
 
 
 browser = webdriver.Chrome(ChromeDriverManager().install())
-fileNameList = []
+
 for j in range(1, 3):
+
+    fileNameList = []
     browser.get(testBaseAcidPlant+str(j))
     time.sleep(1)
     for i in range(2, 12):
-
+        DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i))))
         DateText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
         PlayerText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[6]'.format(i)).text
 
@@ -80,71 +86,66 @@ for j in range(1, 3):
 
                 browser.get(testBaseAcidPlant+str(j))
 
+    print(fileNameList)
 
+    for fileName in fileNameList:
+        archive = mpyq.MPQArchive('H:/Downloads/' + fileName)
+        print(archive.files)
 
-print(fileNameList)
+        contents = archive.header['user_data_header']['content']
+        header = versions.latest().decode_replay_header(contents)
+        baseBuild = header['m_version']['m_baseBuild']
+        protocol = versions.build(baseBuild)
 
-archive = mpyq.MPQArchive('H:/Downloads/ggtracker_335478.SC2Replay')
+        # contents = archive.read_file('replay.initData')
 
-print(archive.files)
+        # lobbyDetails = protocol.decode_replay_initdata(contents)
+        contents = archive.read_file('replay.details')
 
-contents = archive.header['user_data_header']['content']
-header = versions.latest().decode_replay_header(contents)
-baseBuild = header['m_version']['m_baseBuild']
-protocol = versions.build(baseBuild)
+        gameDetails = protocol.decode_replay_details(contents)
 
-#contents = archive.read_file('replay.initData')
+        sentimentTotals = [0 for i in range(len(gameDetails['m_playerList']) * 2)]
 
-#lobbyDetails = protocol.decode_replay_initdata(contents)
-contents = archive.read_file('replay.details')
+        contents = archive.read_file('replay.message.events')
 
-gameDetails = protocol.decode_replay_details(contents)
+        messageEvents = protocol.decode_replay_message_events(contents)
+        listmessages = []
+        analyzer = SentimentIntensityAnalyzer()
+        for event in messageEvents:
+            if event['_event'] == 'NNet.Game.SChatMessage':
+                curMessage = str(event['m_string'])
 
-sentimentTotals = [0 for i in range(len(gameDetails['m_playerList']) * 2)]
+                curMessage = curMessage[2: len(curMessage) - 1]
 
-for stuff in gameDetails:
-    print(stuff)
-contents = archive.read_file('replay.message.events')
+                for key in emojiTranslations:
+                    if key in curMessage:
+                        curMessage = curMessage.replace(key, emojiTranslations[key])
 
-messageEvents = protocol.decode_replay_message_events(contents)
-listmessages = []
-analyzer = SentimentIntensityAnalyzer()
-for event in messageEvents:
-    if event['_event'] == 'NNet.Game.SChatMessage':
-        curMessage = str(event['m_string'])
+                sentimentResult = analyzer.polarity_scores(curMessage)
+                compoundSentiment = sentimentResult['compound']
+                uid = event['_userid']
+                sender = uid['m_userId']
+                sentimentTotals[sender * 2] += 1
+                sentimentTotals[(sender * 2) + 1] += compoundSentiment
+                listmessages.append(curMessage)
+                print("CurrentUser: " + str(sender) + "Sentiment: " + str(compoundSentiment))
 
-        curMessage = curMessage[2: len(curMessage) - 1]
+        compoundUserSentiments = []
+        for i in range(1, len(sentimentTotals), 2):
+            if sentimentTotals[i - 1] > 0:
+                compoundUserSentiments.append(sentimentTotals[i] / sentimentTotals[i - 1])
+        print(listmessages)
+        print(sentimentTotals)
+        print(compoundUserSentiments)
 
-        for key in emojiTranslations:
-            if key in curMessage:
-                curMessage = curMessage.replace(key, emojiTranslations[key])
+        # print(analyzer.polarity_scores("😈"))
+        players = gameDetails['m_playerList']
+        for i in range(len(compoundUserSentiments)):
+            curRace = str(players[i]['m_race'])
 
-
-        sentimentResult = analyzer.polarity_scores(curMessage)
-        compoundSentiment = sentimentResult['compound']
-        uid = event['_userid']
-        sender = uid['m_userId']
-        sentimentTotals[sender * 2] += 1
-        sentimentTotals[(sender * 2) + 1] += compoundSentiment
-        listmessages.append(curMessage)
-        print("CurrentUser: " + str(sender) + "Sentiment: " + str(compoundSentiment))
-
-compoundUserSentiments = []
-for i in range(1, len(sentimentTotals), 2):
-    if sentimentTotals[i-1] > 0:
-        compoundUserSentiments.append(sentimentTotals[i]/sentimentTotals[i-1])
-print(listmessages)
-print(sentimentTotals)
-print(compoundUserSentiments)
-
-# print(analyzer.polarity_scores("😈"))
-players = gameDetails['m_playerList']
-for i in range(len(compoundUserSentiments)):
-    curRace = str(players[i]['m_race'])
-
-    curRace = curRace[2: len(curRace) - 1]
-    races[curRace][0] += 1
-    races[curRace][1] += compoundUserSentiments[i]
+            curRace = curRace[2: len(curRace) - 1]
+            races[curRace][0] += 1
+            races[curRace][1] += compoundUserSentiments[i]
 
 
 print(races)
