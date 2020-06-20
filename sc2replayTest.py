@@ -4,6 +4,34 @@ from selenium import webdriver
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+import time
+import os
+
+class obtainDownloadedName:
+    @staticmethod
+    def getDownLoadedFileName(waitTime, driver):
+        driver.execute_script("window.open()")
+        # switch to new tab
+        driver.switch_to.window(driver.window_handles[-1])
+        # navigate to chrome downloads
+        driver.get('chrome://downloads')
+        # define the endTime
+        endTime = time.time() + waitTime
+        while True:
+            try:
+                # get downloaded percentage
+                downloadPercentage = driver.execute_script(
+                    "return document.querySelector('downloads-manager').shadowRoot.querySelector('#downloadsList downloads-item').shadowRoot.querySelector('#progress').value")
+                # check if downloadPercentage is 100 (otherwise the script will keep waiting)
+                if downloadPercentage == 100:
+                    # return the file name once the download is completed
+                    return driver.execute_script(
+                        "return document.querySelector('downloads-manager').shadowRoot.querySelector('#downloadsList downloads-item').shadowRoot.querySelector('div#content  #file-link').text")
+            except:
+                pass
+            time.sleep(1)
+            if time.time() > endTime:
+                break
 
 
 races = {"Terran": [0, 0], "Zerg": [0, 0], "Protoss": [0, 0]}
@@ -22,36 +50,41 @@ options.add_experimental_option("prefs", {
   "safebrowsing.enabled": True
 })
 
-testBaseAcidPlant = "https://gggreplays.com/matches#?map_name=Acid%20Plant%20LE&page=1"
-curPage = 1
+testBaseAcidPlant = "https://gggreplays.com/matches#?map_name=Acid%20Plant%20LE&page="
+
 
 browser = webdriver.Chrome(ChromeDriverManager().install())
+fileNameList = []
+for j in range(1, 3):
+    browser.get(testBaseAcidPlant+str(j))
+    time.sleep(1)
+    for i in range(2, 12):
 
-browser.get(testBaseAcidPlant)
+        DateText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
+        PlayerText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[6]'.format(i)).text
 
-for i in range(2,12):
+        if "A.I." not in PlayerText and PlayerText:
 
-    DateText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
-    PlayerText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[6]'.format(i)).text
+            if "years" in DateText or "11 months" in DateText or "10 months" in DateText:
+                print(PlayerText)
+                browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
+                before = os.listdir('H:/Downloads')
+                browser.find_element_by_xpath('//*[@id="heading"]/div[1]/div[3]/a/span').click()
+                time.sleep(1)
+                after = os.listdir('H:/Downloads')
 
-    if "A.I." not in PlayerText and PlayerText:
+                change = set(after) - set(before)
 
-        if "years" in DateText or "11 months" in DateText or "10 months" in DateText:
+                file_name = change.pop()
+                fileNameList.append(file_name)
 
-            browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
-            browser.find_element_by_xpath('//*[@id="heading"]/div[1]/div[3]/a/span').click()
-
-
-            browser.back()
-
-
-
-
-
+                browser.get(testBaseAcidPlant+str(j))
 
 
 
-archive = mpyq.MPQArchive('H:/Downloads/ggtracker_219864.SC2Replay')
+print(fileNameList)
+
+archive = mpyq.MPQArchive('H:/Downloads/ggtracker_335478.SC2Replay')
 
 print(archive.files)
 
