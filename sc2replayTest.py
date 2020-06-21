@@ -54,98 +54,120 @@ options.add_experimental_option("prefs", {
   "safebrowsing.enabled": True
 })
 
-testBaseAcidPlant = "https://gggreplays.com/matches#?map_name=Acid%20Plant%20LE&page="
+validMapsFile = open("ValidMapRotation.txt", "r")
 
+validMapsList = validMapsFile.readlines()
+
+curMapLink = ""
 
 browser = webdriver.Chrome(ChromeDriverManager().install())
 
-for j in range(1, 3):
+for k in range(2, 4):
+    curMapName = validMapsList[k]
+    curMapName = curMapName.replace(" ", "%20")
 
-    fileNameList = []
-    browser.get(testBaseAcidPlant+str(j))
-    time.sleep(1)
-    for i in range(2, 12):
-        DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i))))
-        DateText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
-        PlayerText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[6]'.format(i)).text
+    curMapLink = "https://gggreplays.com/matches#?map_name=" + curMapName + "&page="
 
-        if "A.I." not in PlayerText and PlayerText:
+#testBaseAcidPlant = "https://gggreplays.com/matches#?map_name=Acid%20Plant%20LE&page="
 
-            if "years" in DateText or "11 months" in DateText or "10 months" in DateText:
-                print(PlayerText)
-                browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
-                before = os.listdir('H:/Downloads')
-                browser.find_element_by_xpath('//*[@id="heading"]/div[1]/div[3]/a/span').click()
-                time.sleep(1)
-                after = os.listdir('H:/Downloads')
+    for j in range(1, 3):
 
-                change = set(after) - set(before)
+        fileNameList = []
+        browser.get(curMapLink+str(j))
+        time.sleep(1)
+        for i in range(2, 12):
+            DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i))))
+            DateText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
+            PlayerText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[6]'.format(i)).text
 
-                file_name = change.pop()
-                fileNameList.append(file_name)
+            if "A.I." not in PlayerText and PlayerText:
 
-                browser.get(testBaseAcidPlant+str(j))
+                if "year" in DateText or "11 months" in DateText or "10 months" in DateText:
+                    print(PlayerText)
+                    browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
+                    before = os.listdir('H:/Downloads')
+                    browser.find_element_by_xpath('//*[@id="heading"]/div[1]/div[3]/a/span').click()
+                    time.sleep(1)
+                    after = os.listdir('H:/Downloads')
 
-    print(fileNameList)
+                    change = set(after) - set(before)
 
-    for fileName in fileNameList:
-        archive = mpyq.MPQArchive('H:/Downloads/' + fileName)
-        print(archive.files)
+                    file_name = change.pop()
+                    fileNameList.append(file_name)
 
-        contents = archive.header['user_data_header']['content']
-        header = versions.latest().decode_replay_header(contents)
-        baseBuild = header['m_version']['m_baseBuild']
-        protocol = versions.build(baseBuild)
+                    browser.get(curMapLink+str(j))
 
-        # contents = archive.read_file('replay.initData')
+        print(fileNameList)
 
-        # lobbyDetails = protocol.decode_replay_initdata(contents)
-        contents = archive.read_file('replay.details')
+        for fileName in fileNameList:
+            archive = mpyq.MPQArchive('H:/Downloads/' + fileName)
+            print(archive.files)
 
-        gameDetails = protocol.decode_replay_details(contents)
+            contents = archive.header['user_data_header']['content']
+            header = versions.latest().decode_replay_header(contents)
+            baseBuild = header['m_version']['m_baseBuild']
+            protocol = versions.build(baseBuild)
 
-        sentimentTotals = [0 for i in range(len(gameDetails['m_playerList']) * 2)]
+            # contents = archive.read_file('replay.initData')
 
-        contents = archive.read_file('replay.message.events')
+            # lobbyDetails = protocol.decode_replay_initdata(contents)
+            contents = archive.read_file('replay.details')
 
-        messageEvents = protocol.decode_replay_message_events(contents)
-        listmessages = []
-        analyzer = SentimentIntensityAnalyzer()
-        for event in messageEvents:
-            if event['_event'] == 'NNet.Game.SChatMessage':
-                curMessage = str(event['m_string'])
+            gameDetails = protocol.decode_replay_details(contents)
 
-                curMessage = curMessage[2: len(curMessage) - 1]
+            sentimentTotals = [0 for i in range(len(gameDetails['m_playerList']) * 2)]
 
-                for key in emojiTranslations:
-                    if key in curMessage:
-                        curMessage = curMessage.replace(key, emojiTranslations[key])
+            contents = archive.read_file('replay.message.events')
 
-                sentimentResult = analyzer.polarity_scores(curMessage)
-                compoundSentiment = sentimentResult['compound']
-                uid = event['_userid']
-                sender = uid['m_userId']
-                sentimentTotals[sender * 2] += 1
-                sentimentTotals[(sender * 2) + 1] += compoundSentiment
-                listmessages.append(curMessage)
-                print("CurrentUser: " + str(sender) + "Sentiment: " + str(compoundSentiment))
+            messageEvents = protocol.decode_replay_message_events(contents)
+            listmessages = []
+            analyzer = SentimentIntensityAnalyzer()
+            for event in messageEvents:
+                if event['_event'] == 'NNet.Game.SChatMessage':
+                    curMessage = str(event['m_string'])
 
-        compoundUserSentiments = []
-        for i in range(1, len(sentimentTotals), 2):
-            if sentimentTotals[i - 1] > 0:
-                compoundUserSentiments.append(sentimentTotals[i] / sentimentTotals[i - 1])
-        print(listmessages)
-        print(sentimentTotals)
-        print(compoundUserSentiments)
+                    curMessage = curMessage[2: len(curMessage) - 1]
 
-        # print(analyzer.polarity_scores("😈"))
-        players = gameDetails['m_playerList']
-        for i in range(len(compoundUserSentiments)):
-            curRace = str(players[i]['m_race'])
+                    for key in emojiTranslations:
+                        if key in curMessage:
+                            curMessage = curMessage.replace(key, emojiTranslations[key])
 
-            curRace = curRace[2: len(curRace) - 1]
-            races[curRace][0] += 1
-            races[curRace][1] += compoundUserSentiments[i]
+                    sentimentResult = analyzer.polarity_scores(curMessage)
+                    compoundSentiment = sentimentResult['compound']
+                    uid = event['_userid']
+                    sender = uid['m_userId']
+                    sentimentTotals[sender * 2] += 1
+                    sentimentTotals[(sender * 2) + 1] += compoundSentiment
+                    listmessages.append(curMessage)
+                    print("CurrentUser: " + str(sender) + "Sentiment: " + str(compoundSentiment))
+
+            compoundUserSentiments = []
+            for i in range(1, len(sentimentTotals), 2):
+                if sentimentTotals[i - 1] > 0:
+                    compoundUserSentiments.append(sentimentTotals[i] / sentimentTotals[i - 1])
+            print(listmessages)
+            print(sentimentTotals)
+            print(compoundUserSentiments)
+
+            # print(analyzer.polarity_scores("😈"))
+            players = gameDetails['m_playerList']
+            for i in range(len(compoundUserSentiments)):
+                curRace = str(players[i]['m_race'])
+                if "Zerg" in curRace:
+                    curRace = "Zerg"
+                    races[curRace][0] += 1
+                    races[curRace][1] += compoundUserSentiments[i]
+                elif "Terran" in curRace:
+                    curRace = "Terran"
+                    races[curRace][0] += 1
+                    races[curRace][1] += compoundUserSentiments[i]
+                elif "Protoss" in curRace:
+                    curRace = "Protoss"
+                    races[curRace][0] += 1
+                    races[curRace][1] += compoundUserSentiments[i]
+
+                #curRace = curRace[2: len(curRace) - 1]
+
 
 
 print(races)
