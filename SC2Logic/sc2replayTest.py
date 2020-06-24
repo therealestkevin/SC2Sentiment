@@ -167,8 +167,5 @@ for k in range(2, 4):
                     races[curRace][1] += compoundUserSentiments[i]
 
                 #curRace = curRace[2: len(curRace) - 1]
-
-
-
 print(races)
 
