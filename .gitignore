@@ -105,4 +105,4 @@ venv.bak/
 
 \.idea/
 
-S2Django/S2Django/secrets.py
+SC2Django/SC2Django/secrets.py
