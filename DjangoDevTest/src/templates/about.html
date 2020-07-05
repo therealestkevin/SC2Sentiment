@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content%}
+<h1>About</h1>
+<p>This is a template</p>
+
+	{{my_html|striptags}}
+
+<p>
+
+<h3>	{{my_text|capfirst|title}} </h3>
+
+{{my_text}}, {{my_number}}, {{my_list}}, {{this_is_true}}
+
+</p>
+
+<ul>
+	<li>Item 1</li>
+	<li>Item 2</li>
+</ul>
+
+<ul>
+{% for abc in my_list %}
+
+	{% if abc == 1 %}
+		<li>{{forloop.counter}} - {{abc|add:22}}</li>
+	{% elif abc == 20 %}
+		<li> Triggered </li>
+	{% else %}
+		<li>{{forloop.counter}} - {{abc}}</li>
+	{% endif %}
+
+
+
+{% endfor %}
+</ul>
+
+
+
+{% endblock %}
