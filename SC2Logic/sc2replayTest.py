@@ -38,6 +38,17 @@ class obtainDownloadedName:
                 break
 
 
+def enable_download_in_headless_chrome(driver, download_dir):
+
+    # add missing support for chrome "send_command"  to selenium webdriver
+    driver.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
+
+    params = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': download_dir}}
+    command_result = driver.execute("send_command", params)
+    print("response from browser:")
+    for key in command_result:
+        print("result:" + key + ":" + str(command_result[key]))
+
 races = {"Terran": [0, 0], "Zerg": [0, 0], "Protoss": [0, 0]}
 emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "😢",
                      "(sad)": "😢", ":@": "😠", "(angry)": "😠", ":O": "😲",
@@ -47,12 +58,17 @@ emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "�
                      "|-]": "😴", "(sleepy)": "😴", "(kiss)": "😘", "(devil)": "😈"
                      }
 options = Options()
+
+options.add_argument("--headless")
+
 options.add_experimental_option("prefs", {
-  "download.default_directory": r"H:\Code\SC2Sentiment\TempReplays",
+  "download.default_directory": "H:/Downloads",
   "download.prompt_for_download": False,
   "download.directory_upgrade": True,
-  "safebrowsing.enabled": True
+  "safebrowsing_for_trusted_sources_enabled": False,
+  "safebrowsing.enabled": False
 })
+
 
 validMapsFile = open("ValidMapRotation.txt", "r")
 
@@ -60,13 +76,17 @@ validMapsList = validMapsFile.readlines()
 
 curMapLink = ""
 
-browser = webdriver.Chrome(ChromeDriverManager().install())
+browser = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+
+enable_download_in_headless_chrome(browser, "H:/Downloads")
 
 for k in range(2, 4):
     curMapName = validMapsList[k]
     curMapName = curMapName.replace(" ", "%20")
 
     curMapLink = "https://gggreplays.com/matches#?map_name=" + curMapName + "&page="
+
+
 
 #testBaseAcidPlant = "https://gggreplays.com/matches#?map_name=Acid%20Plant%20LE&page="
 
@@ -86,8 +106,11 @@ for k in range(2, 4):
                     print(PlayerText)
                     browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
                     before = os.listdir('H:/Downloads')
-                    browser.find_element_by_xpath('//*[@id="heading"]/div[1]/div[3]/a/span').click()
-                    time.sleep(1)
+
+                    #browser.find_element_by_xpath('//*[@id="heading"]/div[1]/div[3]/a/span').click()
+                    downURL = browser.current_url+"/replay"
+                    browser.get(downURL)
+                    time.sleep(5)
                     after = os.listdir('H:/Downloads')
 
                     change = set(after) - set(before)

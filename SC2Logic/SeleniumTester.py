@@ -3,6 +3,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+import os
 from selenium.common.exceptions import TimeoutException
 import time
 
@@ -27,7 +29,8 @@ class MyClass:
       if time.time() > endTime:
         break
 
-
+options = Options()
+options.headless = True
 
 profile = webdriver.FirefoxProfile()
 
@@ -37,30 +40,31 @@ profile.set_preference("browser.download.folderList", 2)
 profile.set_preference("browser.download.manager.showWhenStarting", False)
 profile.set_preference("browser.helperApps.neverAsk.saveToDisk", 'application/octet-stream')
 
-browser = webdriver.Firefox(firefox_profile=profile)
+browser = webdriver.Firefox(options=options, firefox_profile=profile)
 
 browser.get("https://gggreplays.com/matches#?map_name=Acid%20Plant%20LE&page=1")
 
 print(browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[2]/td[6]').text)
 
-#WebDriverWait(browser, 1000).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[2]'))).click()
+matchLink = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[2]/td[2]/a').get_attribute('href')
+
+browser.get(matchLink)
+
+#before = os.listdir('H:/Downloads')
+
+downURL = browser.current_url+"/replay"
+
+browser.get(downURL)
 
 
-curElement = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[2]')
-actions = ActionChains(browser)
-actions.move_to_element(curElement)
-actions.click(curElement)
+#after = os.listdir('H:/Downloads')
 
-actions.perform()
+#print(MyClass.getDownLoadedFileName(3, browser))
+#change = set(after) - set(before)
+#file_name = change.pop()
+#print(file_name)
 
-
-#browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[2]')
-
-button = WebDriverWait(browser,3).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/div[5]/div[1]/div[1]/div[3]/a/span')))
-button.click()
-
-print(MyClass.getDownLoadedFileName(3, browser))
-
+browser.close()
 
 
 
