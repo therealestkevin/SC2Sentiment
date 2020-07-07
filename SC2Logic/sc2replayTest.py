@@ -4,50 +4,19 @@ from selenium import webdriver
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-import time
-import os
+from time import sleep
+from os import getcwd, listdir
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-class obtainDownloadedName:
-    @staticmethod
-    def getDownLoadedFileName(waitTime, driver):
-        driver.execute_script("window.open()")
-        # switch to new tab
-        driver.switch_to.window(driver.window_handles[-1])
-        # navigate to chrome downloads
-        driver.get('chrome://downloads')
-        # define the endTime
-        endTime = time.time() + waitTime
-        while True:
-            try:
-                # get downloaded percentage
-                downloadPercentage = driver.execute_script(
-                    "return document.querySelector('downloads-manager').shadowRoot.querySelector('#downloadsList downloads-item').shadowRoot.querySelector('#progress').value")
-                # check if downloadPercentage is 100 (otherwise the script will keep waiting)
-                if downloadPercentage == 100:
-                    # return the file name once the download is completed
-                    return driver.execute_script(
-                        "return document.querySelector('downloads-manager').shadowRoot.querySelector('#downloadsList downloads-item').shadowRoot.querySelector('div#content  #file-link').text")
-            except:
-                pass
-            time.sleep(1)
-            if time.time() > endTime:
-                break
-
-
 def enable_download_in_headless_chrome(driver, download_dir):
-
     # add missing support for chrome "send_command"  to selenium webdriver
     driver.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
-
     params = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': download_dir}}
     command_result = driver.execute("send_command", params)
-    print("response from browser:")
-    for key in command_result:
-        print("result:" + key + ":" + str(command_result[key]))
+
 
 races = {"Terran": [0, 0], "Zerg": [0, 0], "Protoss": [0, 0]}
 emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "😢",
@@ -62,7 +31,7 @@ options = Options()
 options.add_argument("--headless")
 
 options.add_experimental_option("prefs", {
-  "download.default_directory": "H:/Downloads",
+  "download.default_directory": "H:\Code\SC2Sentiment\SC2Logic\TempReplays",
   "download.prompt_for_download": False,
   "download.directory_upgrade": True,
   "safebrowsing_for_trusted_sources_enabled": False,
@@ -75,10 +44,10 @@ validMapsFile = open("ValidMapRotation.txt", "r")
 validMapsList = validMapsFile.readlines()
 
 curMapLink = ""
+#ChromeDriverManager().install()
+browser = webdriver.Chrome('H:/chromedriver_win32/chromedriver.exe', options=options)
 
-browser = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-
-enable_download_in_headless_chrome(browser, "H:/Downloads")
+enable_download_in_headless_chrome(browser, "H:\Code\SC2Sentiment\SC2Logic\TempReplays")
 
 for k in range(2, 4):
     curMapName = validMapsList[k]
@@ -94,7 +63,7 @@ for k in range(2, 4):
 
         fileNameList = []
         browser.get(curMapLink+str(j))
-        time.sleep(1)
+        sleep(1)
         for i in range(2, 12):
             DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i))))
             DateText = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
@@ -105,13 +74,13 @@ for k in range(2, 4):
                 if "year" in DateText or "11 months" in DateText or "10 months" in DateText:
                     print(PlayerText)
                     browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
-                    before = os.listdir('H:/Downloads')
+                    before = listdir('H:\Code\SC2Sentiment\SC2Logic\TempReplays')
 
                     #browser.find_element_by_xpath('//*[@id="heading"]/div[1]/div[3]/a/span').click()
                     downURL = browser.current_url+"/replay"
                     browser.get(downURL)
-                    time.sleep(5)
-                    after = os.listdir('H:/Downloads')
+                    sleep(5)
+                    after = listdir('H:\Code\SC2Sentiment\SC2Logic\TempReplays')
 
                     change = set(after) - set(before)
 
@@ -123,7 +92,7 @@ for k in range(2, 4):
         print(fileNameList)
 
         for fileName in fileNameList:
-            archive = mpyq.MPQArchive('H:/Downloads/' + fileName)
+            archive = mpyq.MPQArchive("H:\Code\SC2Sentiment\SC2Logic\TempReplays\\" + fileName)
             print(archive.files)
 
             contents = archive.header['user_data_header']['content']

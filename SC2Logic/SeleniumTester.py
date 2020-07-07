@@ -30,7 +30,7 @@ class MyClass:
         break
 
 options = Options()
-options.headless = True
+#options.headless = True
 
 profile = webdriver.FirefoxProfile()
 
@@ -50,19 +50,19 @@ matchLink = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/tabl
 
 browser.get(matchLink)
 
-#before = os.listdir('H:/Downloads')
+before = os.listdir('H:/Downloads')
 
 downURL = browser.current_url+"/replay"
 
 browser.get(downURL)
 
 
-#after = os.listdir('H:/Downloads')
+after = os.listdir('H:/Downloads')
 
 #print(MyClass.getDownLoadedFileName(3, browser))
-#change = set(after) - set(before)
-#file_name = change.pop()
-#print(file_name)
+change = set(after) - set(before)
+file_name = change.pop()
+print(file_name)
 
 browser.close()
 
