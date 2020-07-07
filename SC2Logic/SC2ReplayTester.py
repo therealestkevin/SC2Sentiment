@@ -14,7 +14,6 @@ emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "�
                      }
 archive = mpyq.MPQArchive("H:/Downloads/ggtracker_278382.SC2Replay")
 
-
 contents = archive.header['user_data_header']['content']
 header = versions.latest().decode_replay_header(contents)
 baseBuild = header['m_version']['m_baseBuild']
@@ -62,7 +61,6 @@ print(listmessages)
 print(sentimentTotals)
 print(compoundUserSentiments)
 
-# print(analyzer.polarity_scores("😈"))
 players = gameDetails['m_playerList']
 for i in range(len(compoundUserSentiments)):
     curRace = str(players[i]['m_race'])
