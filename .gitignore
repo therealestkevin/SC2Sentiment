@@ -106,3 +106,9 @@ venv.bak/
 \.idea/
 
 SC2Django/SC2Django/secrets.py
+
+DjangoDevTest/bin/python
+
+DjangoDevTest/bin/python3.8
+
+DjangoDevTest/bin/python3

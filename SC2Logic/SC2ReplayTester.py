@@ -12,12 +12,20 @@ emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "�
                      "B-}": "😎", "(cool)": "😎", ":S": "😨", "(scared)": "😨",
                      "|-]": "😴", "(sleepy)": "😴", "(kiss)": "😘", "(devil)": "😈"
                      }
-archive = mpyq.MPQArchive("H:/Downloads/ggtracker_278382.SC2Replay")
+archive = mpyq.MPQArchive("H:/Downloads/ggtracker_300391.SC2Replay")
 
 contents = archive.header['user_data_header']['content']
 header = versions.latest().decode_replay_header(contents)
 baseBuild = header['m_version']['m_baseBuild']
-protocol = versions.build(baseBuild)
+protocol = 0
+try:
+    protocol = versions.build(baseBuild)
+except ImportError as err:
+    print(err.args)
+
+
+print(protocol)
+print(baseBuild)
 contents = archive.read_file('replay.initData')
 
 lobbyDetails = protocol.decode_replay_initdata(contents)
