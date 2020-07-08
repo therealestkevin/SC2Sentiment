@@ -4,11 +4,12 @@ from selenium import webdriver
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from selenium.webdriver.chrome.options import Options
 from time import sleep
-from os import getcwd, listdir
+from os import getcwd, listdir, mkdir, rename
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from shutil import rmtree
+from uuid import uuid4
 
 def enable_download_in_headless_chrome(driver, download_dir):
     # add missing support for chrome "send_command"  to selenium webdriver
@@ -79,12 +80,20 @@ for k in range(2, 4):
 
                     downURL = matchLink + "/replay"
                     browser.get(downURL)
-                    sleep(2)
+                    #sleep(2)
                     after = listdir(getcwd() + '\\TempReplays')
-
                     change = set(after) - set(before)
+                    file_name = ""
+                    repeat = True
+                    while len(change) == 0 or repeat:
+                        sleep(0.25)
+                        after = listdir(getcwd() + '\\TempReplays')
+                        change = set(after) - set(before)
+                        if len(change) > 0:
+                            file_name = change.pop()
+                            if 'crdownload' not in file_name:
+                                break
 
-                    file_name = change.pop()
                     fileNameList.append(file_name)
 
                     # browser.get(curMapLink+str(j))
@@ -94,7 +103,6 @@ for k in range(2, 4):
         for fileName in fileNameList:
             archive = mpyq.MPQArchive(getcwd() + '\\TempReplays\\' + fileName)
             print(archive.files)
-
             contents = archive.header['user_data_header']['content']
             header = versions.latest().decode_replay_header(contents)
             baseBuild = header['m_version']['m_baseBuild']
@@ -135,8 +143,17 @@ for k in range(2, 4):
 
             compoundUserSentiments = []
             for i in range(1, len(sentimentTotals), 2):
-                if sentimentTotals[i - 1] > 0:
+                #Counting Non-Message Players in Total Player Sentiment Count
+                if sentimentTotals[i - 1] == 0:
+                    compoundUserSentiments.append(0)
+                else:
                     compoundUserSentiments.append(sentimentTotals[i] / sentimentTotals[i - 1])
+
+            #Not counting Non-Message Players in Total Player Sentiment Count
+            #Results in an innacurate average as it disregards neutral players
+            #if sentimentTotals[i - 1] > 0:
+            #    compoundUserSentiments.append(sentimentTotals[i] / sentimentTotals[i - 1])
+
             print(listmessages)
             print(sentimentTotals)
             print(compoundUserSentiments)
@@ -158,4 +175,10 @@ for k in range(2, 4):
                     races[curRace][1] += compoundUserSentiments[i]
 
                 # curRace = curRace[2: len(curRace) - 1]
+archive = None
+browser.close()
+new_name = str(uuid4())
+rename(getcwd() + '\\TempReplays', new_name)
+rmtree(getcwd() + '\\' + new_name)
+mkdir(getcwd() + '\\TempReplays')
 print(races)
