@@ -154,8 +154,8 @@ for k in range(2, 4):
                     after = listdir(getcwd() + '\\TempReplays')
                     change = set(after) - set(before)
                     file_name = ""
-                    repeat = True
-                    while len(change) == 0 or repeat:
+                    loopCount = 0
+                    while loopCount < 16 or len(change) == 0:
                         sleep(0.25)
                         after = listdir(getcwd() + '\\TempReplays')
                         change = set(after) - set(before)
@@ -163,6 +163,10 @@ for k in range(2, 4):
                             file_name = change.pop()
                             if 'crdownload' not in file_name:
                                 break
+                        loopCount += 1
+
+                    if loopCount == 16:
+                        continue
 
                     fileNameList.append(file_name)
 
