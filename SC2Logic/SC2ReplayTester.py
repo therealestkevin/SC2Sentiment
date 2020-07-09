@@ -12,7 +12,7 @@ emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "�
                      "B-}": "😎", "(cool)": "😎", ":S": "😨", "(scared)": "😨",
                      "|-]": "😴", "(sleepy)": "😴", "(kiss)": "😘", "(devil)": "😈"
                      }
-archive = mpyq.MPQArchive("H:/Downloads/ggtracker_300391.SC2Replay")
+archive = mpyq.MPQArchive("H:/Downloads/ggtracker_219864.SC2Replay")
 
 contents = archive.header['user_data_header']['content']
 header = versions.latest().decode_replay_header(contents)
@@ -29,9 +29,11 @@ print(baseBuild)
 contents = archive.read_file('replay.initData')
 
 lobbyDetails = protocol.decode_replay_initdata(contents)
+print(lobbyDetails)
 contents = archive.read_file('replay.details')
 
 gameDetails = protocol.decode_replay_details(contents)
+print(gameDetails)
 
 sentimentTotals = [0 for i in range(len(gameDetails['m_playerList']) * 2)]
 

@@ -23,6 +23,10 @@ def analyze_sentiments(archive_, protocol_, races_):
     contents_ = archive_.read_file('replay.details')
 
     gameDetails_ = protocol_.decode_replay_details(contents_)
+    #in the future, add functionality to check for duplicate replays
+    #compare up to the database, only save the gamedetails in the database
+    #gamedetails contain specific time and game equivalencies that are
+    #completely unique, just a call simple contains on the DB
 
     sentimentTotals = [0 for i_ in range(len(gameDetails_['m_playerList']) * 2)]
 
