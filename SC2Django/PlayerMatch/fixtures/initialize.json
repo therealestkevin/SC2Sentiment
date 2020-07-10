@@ -1,0 +1,11 @@
+[
+  {
+    "model": "PlayerMatch.OverallSentiment",
+    "pk": 1,
+    "fields": {
+      "terranSentiment": 0.00,
+      "zergSentiment": 0.00,
+      "protossSentiment": 0.00
+    }
+  }
+]
