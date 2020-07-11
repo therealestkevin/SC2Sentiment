@@ -15,6 +15,9 @@ class PlayerMatchSingular(models.Model):
 
 
 class OverallSentiment(models.Model):
-    terranSentiment = models.FloatField()
-    zergSentiment = models.FloatField()
-    protossSentiment = models.FloatField()
+    terranSentimentCount = models.IntegerField(null=True)
+    terranSentimentOverall = models.FloatField(null=True)
+    zergSentimentCount = models.IntegerField(null=True)
+    zergSentimentOverall = models.FloatField(null=True)
+    protossSentimentCount = models.IntegerField(null=True)
+    protossSentimentOverall = models.FloatField(null=True)

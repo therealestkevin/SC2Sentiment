@@ -19,7 +19,10 @@ class FileFieldView(FormView):
         files = request.FILES.getlist('replay_file')
         if form.is_valid():
             for f in files:
-                process_uploaded_replay(f)
+                #Verify Correct Files
+                if f.name.endswith('.SC2Replay'):
+                    print(f.name)
+                    process_uploaded_replay(f.file)
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
