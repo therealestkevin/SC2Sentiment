@@ -23,10 +23,10 @@ def analyze_sentiments(archive_, protocol_, races_):
     contents_ = archive_.read_file('replay.details')
 
     gameDetails_ = protocol_.decode_replay_details(contents_)
-    #in the future, add functionality to check for duplicate replays
-    #compare up to the database, only save the gamedetails in the database
-    #gamedetails contain specific time and game equivalencies that are
-    #completely unique, just a call simple contains on the DB
+    # in the future, add functionality to check for duplicate replays
+    # compare up to the database, only save the gamedetails in the database
+    # gamedetails contain specific time and game equivalencies that are
+    # completely unique, just a call simple contains on the DB
 
     sentimentTotals = [0 for i_ in range(len(gameDetails_['m_playerList']) * 2)]
 
@@ -49,6 +49,8 @@ def analyze_sentiments(archive_, protocol_, races_):
             compoundSentiment = sentimentResult['compound']
             uid = event['_userid']
             sender = uid['m_userId']
+            if sender >= len(gameDetails_['m_playerList']):
+                continue
             sentimentTotals[sender * 2] += 1
             sentimentTotals[(sender * 2) + 1] += compoundSentiment
             listmessages.append(curMessage)
@@ -108,91 +110,111 @@ options.add_experimental_option("prefs", {
     "safebrowsing.enabled": False
 })
 
-validMapsFile = open("ValidMapRotationCopy.txt", "r")
+curAllMaps = open('ValidMapRotationCopy.txt').readlines()
+curMap = curAllMaps[0]
+# open('ValidMapRotationCopy.txt', 'w').writelines(curAllMaps[1:])
 
-validMapsList = validMapsFile.readlines()
 
 curMapLink = ""
 browser = webdriver.Chrome('H:\\chromedriver_win32\\chromedriver.exe', options=options)
 
 enable_download_in_headless_chrome(browser, getcwd() + '\\TempReplays')
 
-for k in range(0, 4):
-    curMapName = validMapsList[k]
-    curMapName = curMapName.replace(" ", "%20")
+curMapName = curMap
+curMapName = curMapName.replace(" ", "%20")
 
-    curMapLink = "https://gggreplays.com/matches#?map_name=" + curMapName + "&page="
+curMapLink = "https://gggreplays.com/matches#?map_name=" + curMapName + "&page="
+isLast = False
+isLastPage = False
+curPage = 1
+browser.get(curMapLink + str(curPage))
+sleep(1)
+while not isLastPage:
 
-    for j in range(16, 18):
+    fileNameList = []
+    TableBody = browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody')
+    AllRows = TableBody.find_elements_by_tag_name("tr")
+    TotalRowNum = len(AllRows)
 
-        fileNameList = []
-        browser.get(curMapLink + str(j))
-        sleep(1)
-        for i in range(2, 12):
-            DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH,
-                '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i))))
-            DateText = browser.find_element_by_xpath(
-                '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
-            PlayerText = browser.find_element_by_xpath(
-                '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[6]'.format(i)).text
+    for i in range(2, TotalRowNum+1):
+        DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH,
+                                                                                        '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(
+                                                                                            i))))
+        DateText = browser.find_element_by_xpath(
+            '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
+        PlayerText = browser.find_element_by_xpath(
+            '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[6]'.format(i)).text
 
-            if "A.I." not in PlayerText and PlayerText:
+        if "A.I." not in PlayerText and PlayerText:
 
-                if "year" in DateText or "11 months" in DateText or "10 months" in DateText:
-                    print(PlayerText)
-                    matchLink = browser.find_element_by_xpath(
-                        '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[2]/a'
+            if "year" in DateText or "11 months" in DateText or "10 months" in DateText:
+                print(PlayerText)
+                matchLink = browser.find_element_by_xpath(
+                    '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[2]/a'
                         .format(i)).get_attribute('href')
-                    print(matchLink)
+                print(matchLink)
 
-                    # browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
-                    before = listdir(getcwd() + '\\TempReplays')
+                # browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
+                before = listdir(getcwd() + '\\TempReplays')
 
-                    downURL = matchLink + "/replay"
-                    browser.get(downURL)
-                    #sleep(2)
+                downURL = matchLink + "/replay"
+                browser.get(downURL)
+                # sleep(2)
+                after = listdir(getcwd() + '\\TempReplays')
+                change = set(after) - set(before)
+                file_name = ""
+                loopCount = 0
+                while loopCount < 16 and len(change) == 0:
+                    sleep(0.25)
                     after = listdir(getcwd() + '\\TempReplays')
                     change = set(after) - set(before)
-                    file_name = ""
-                    loopCount = 0
-                    while loopCount < 16 and len(change) == 0:
-                        sleep(0.25)
-                        after = listdir(getcwd() + '\\TempReplays')
-                        change = set(after) - set(before)
-                        if len(change) > 0:
-                            file_name = change.pop()
-                            if 'crdownload' not in file_name:
-                                break
-                        loopCount += 1
+                    if len(change) > 0:
+                        file_name = change.pop()
+                        if 'crdownload' not in file_name:
+                            break
+                    loopCount += 1
 
-                    if loopCount == 16:
-                        browser.get(curMapLink + str(j))
-                        continue
+                if loopCount == 16:
+                    browser.get(curMapLink + str(curPage))
+                    continue
 
+                if file_name:
                     fileNameList.append(file_name)
 
-                    # browser.get(curMapLink+str(j))
-
-        print(fileNameList)
-
-        for fileName in fileNameList:
-            archive = mpyq.MPQArchive(getcwd() + '\\TempReplays\\' + fileName)
-            print(archive.files)
-            contents = archive.header['user_data_header']['content']
-            header = versions.latest().decode_replay_header(contents)
-            baseBuild = header['m_version']['m_baseBuild']
-
-            try:
-                protocol = versions.build(baseBuild)
-                analyze_sentiments(archive, protocol, races)
-            except ImportError as err:
-                print(err.args)
-
-            # contents = archive.read_file('replay.initData')
-            # lobbyDetails = protocol.decode_replay_initdata(contents)
+                # browser.get(curMapLink+str(j))
 
 
-                # curRace = curRace[2: len(curRace) - 1]
+    print(fileNameList)
+
+    for fileName in fileNameList:
+        archive = mpyq.MPQArchive(getcwd() + '\\TempReplays\\' + fileName)
+        print(archive.files)
+        contents = archive.header['user_data_header']['content']
+        header = versions.latest().decode_replay_header(contents)
+        baseBuild = header['m_version']['m_baseBuild']
+
+        try:
+            protocol = versions.build(baseBuild)
+            analyze_sentiments(archive, protocol, races)
+        except ImportError as err:
+            print(err.args)
+
+    if isLast:
+        isLastPage = True
+
+    curPage += 1
+
+    browser.get(curMapLink + str(curPage))
+    sleep(1)
+    nextButton = browser.find_element_by_xpath(
+        '//*[@id="matches"]/div[3]/div[3]/unpaginate/div/ul/li[3]').get_attribute("style")
+
+    if 'none' in nextButton:
+        isLast = True
+    # contents = archive.read_file('replay.initData')
+    # lobbyDetails = protocol.decode_replay_initdata(contents)
+
+    # curRace = curRace[2: len(curRace) - 1]
 archive = None
 browser.close()
 new_name = str(uuid4())
