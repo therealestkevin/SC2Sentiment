@@ -3,9 +3,12 @@
     "model": "PlayerMatch.OverallSentiment",
     "pk": 1,
     "fields": {
-      "terranSentiment": 0.00,
-      "zergSentiment": 0.00,
-      "protossSentiment": 0.00
+      "terranSentimentCount": 0,
+      "terranSentimentOverall": 0.00,
+      "zergSentimentCount": 0,
+      "zergSentimentOverall": 0.00,
+      "protossSentimentCount": 0,
+      "protossSentimentOverall": 0.00
     }
   }
 ]

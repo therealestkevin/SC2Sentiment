@@ -1,6 +1,6 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from .models import PlayerMatchSingular
+from .models import PlayerMatchSingular, OverallSentiment
 from s2protocol import versions
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import mpyq
@@ -48,9 +48,11 @@ def process_uploaded_replay(replayFile):
         messageEvents = protocol.decode_replay_message_events(contents)
         listmessages = []
         listMessageSentiments = []
+        compoundUserSentiments = []
         for i in range(len(gameDetails['m_playerList'])):
             listmessages.append([])
             listMessageSentiments.append([])
+            compoundUserSentiments.append(0)
 
         analyzer = SentimentIntensityAnalyzer()
 
@@ -90,13 +92,27 @@ def process_uploaded_replay(replayFile):
                 print(sentimentTotals)
                 print(compoundUserSentiments)
 
-            playerList = gameDetails['m_playerList']
-
+        playerList = gameDetails['m_playerList']
+        overallSentiments = OverallSentiment.objects.get(pk=1)
         for i in range(len(gameDetails['m_playerList'])):
-            curPlayer = playerList[i]
-            curPlayerName = strip_html(curPlayer['m_name'].decode("utf-8"))
+            curPlayerName = strip_html(playerList[i]['m_name'].decode("utf-8"))
             PlayerMatchSingular.objects.create(username=curPlayerName,
                                 compoundSentiment=compoundUserSentiments[i], messages=listmessages[i],
                                 messageSentiments=listMessageSentiments[i])
+            curRace = str(playerList[i]['m_race'])
+            if "Zerg" in curRace:
+                overallSentiments.zergSentimentCount += 1
+
+                overallSentiments.zergSentimentOverall += compoundUserSentiments[i]
+            elif "Terran" in curRace:
+                overallSentiments.terranSentimentCount += 1
+
+                overallSentiments.terranSentimentOverall += compoundUserSentiments[i]
+            elif "Protoss" in curRace:
+                overallSentiments.protossSentimentCount += 1
+
+                overallSentiments.protossSentimentOverall += compoundUserSentiments[i]
+
+        overallSentiments.save()
     except ImportError as err:
         print(err.args)
