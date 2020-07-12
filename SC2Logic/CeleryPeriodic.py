@@ -137,9 +137,9 @@ while not isLastPage:
     TotalRowNum = len(AllRows)
 
     for i in range(2, TotalRowNum+1):
-        DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH,
-                                                                                        '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(
-                                                                                            i))))
+        #DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH,
+         #                                                                               '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(
+          #                                                                                  i))))
         DateText = browser.find_element_by_xpath(
             '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
         PlayerText = browser.find_element_by_xpath(
