@@ -153,14 +153,14 @@ def selenium_process_replay():
         "safebrowsing.enabled": False
     })
 
-    curAllMaps = open('ValidMapRotationBackup.txt').readlines()
+    curAllMaps = open(getcwd() + '\\PlayerMatch\\ValidMapRotationBackup.txt').readlines()
     curMap = curAllMaps[0]
     # open('ValidMapRotationCopy.txt', 'w').writelines(curAllMaps[1:])
 
     curMapLink = ""
-    browser = webdriver.Chrome(getcwd() + '\\chromedriver.exe', options=options)
+    browser = webdriver.Chrome(getcwd() + '\\PlayerMatch\\chromedriver.exe', options=options)
 
-    enable_download_in_headless_chrome(browser, getcwd() + '\\TempReplays')
+    enable_download_in_headless_chrome(browser, getcwd() + '\\PlayerMatch\\TempReplays')
 
     curMapName = curMap
     curMapName = curMapName.replace(" ", "%20")
@@ -198,18 +198,18 @@ def selenium_process_replay():
                     print(matchLink)
 
                     # browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
-                    before = listdir(getcwd() + '\\TempReplays')
+                    before = listdir(getcwd() + '\\PlayerMatch\\TempReplays')
 
                     downURL = matchLink + "/replay"
                     browser.get(downURL)
                     # sleep(2)
-                    after = listdir(getcwd() + '\\TempReplays')
+                    after = listdir(getcwd() + '\\PlayerMatch\\TempReplays')
                     change = set(after) - set(before)
                     file_name = ""
                     loopCount = 0
                     while loopCount < 16 and len(change) == 0:
                         sleep(0.25)
-                        after = listdir(getcwd() + '\\TempReplays')
+                        after = listdir(getcwd() + '\\PlayerMatch\\TempReplays')
                         change = set(after) - set(before)
                         if len(change) > 0:
                             file_name = change.pop()
@@ -221,7 +221,7 @@ def selenium_process_replay():
                         browser.get(curMapLink + str(curPage))
                         continue
 
-                    if file_name:
+                    if file_name and 'crdownload' not in file_name:
                         fileNameList.append(file_name)
 
                     # browser.get(curMapLink+str(j))
@@ -229,7 +229,7 @@ def selenium_process_replay():
         print(fileNameList)
 
         for fileName in fileNameList:
-            archive = mpyq.MPQArchive(getcwd() + '\\TempReplays\\' + fileName)
+            archive = mpyq.MPQArchive(getcwd() + '\\PlayerMatch\\TempReplays\\' + fileName)
             print(archive.files)
             contents = archive.header['user_data_header']['content']
             header = versions.latest().decode_replay_header(contents)
@@ -260,8 +260,8 @@ def selenium_process_replay():
     archive = None
     browser.close()
     new_name = str(uuid4())
-    rename(getcwd() + '\\TempReplays', new_name)
-    rmtree(getcwd() + '\\' + new_name)
-    mkdir(getcwd() + '\\TempReplays')
+    rename(getcwd() + '\\PlayerMatch\\TempReplays', new_name)
+    rmtree(getcwd() + '\\PlayerMatch\\' + new_name)
+    mkdir(getcwd() + '\\PlayerMatch\\TempReplays')
 
 

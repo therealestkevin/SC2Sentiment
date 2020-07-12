@@ -7,6 +7,9 @@
 	{{form.as_p}}
 	<input type='submit' value = 'Upload'/>
 
+    </form>
 
+    <form method="post" action=".">{% csrf_token %}
+        <input type="submit" class="btn" value="Click" name="process_btn">
     </form>
 {% endblock %}
