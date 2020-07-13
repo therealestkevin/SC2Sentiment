@@ -70,6 +70,8 @@ def analyze_sentiments(archive_, protocol_):
             compoundSentiment = sentimentResult['compound']
             uid = event['_userid']
             sender = uid['m_userId']
+            if sender >= len(gameDetails['m_playerList']):
+                continue
             sentimentTotals[sender * 2] += 1
             sentimentTotals[(sender * 2) + 1] += compoundSentiment
             listmessages[sender].append(curMessage)
@@ -181,10 +183,11 @@ def selenium_process_replay():
         for i in range(2, TotalRowNum + 1):
             #Add this below if there is loading error on the table elements
 
-            #DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH,
-            #            '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i))))
-            DateText = browser.find_element_by_xpath(
-                '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
+            DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH,
+                        '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i))))
+            DateText = DateElement.text
+                #browser.find_element_by_xpath(
+                #'//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
             PlayerText = browser.find_element_by_xpath(
                 '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[6]'.format(i)).text
 
@@ -220,6 +223,7 @@ def selenium_process_replay():
                     if loopCount == 16:
                         browser.get(curMapLink + str(curPage))
                         continue
+                        #and 'crdownload'
 
                     if file_name and 'crdownload' not in file_name:
                         fileNameList.append(file_name)
@@ -260,7 +264,7 @@ def selenium_process_replay():
     archive = None
     browser.close()
     new_name = str(uuid4())
-    rename(getcwd() + '\\PlayerMatch\\TempReplays', new_name)
+    rename(getcwd() + '\\PlayerMatch\\TempReplays\\', getcwd() + '\\PlayerMatch\\' + new_name)
     rmtree(getcwd() + '\\PlayerMatch\\' + new_name)
     mkdir(getcwd() + '\\PlayerMatch\\TempReplays')
 

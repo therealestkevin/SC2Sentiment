@@ -11,7 +11,8 @@ class FileFieldView(FormView):
     template_name = 'PlayerMatch/replay_file_upload.html'
 
     def get_success_url(self):
-        return reverse('PlayerMatch:replay-upload')
+        #return reverse('PlayerMatch:replay-upload')
+        return reverse('replay-upload')
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
