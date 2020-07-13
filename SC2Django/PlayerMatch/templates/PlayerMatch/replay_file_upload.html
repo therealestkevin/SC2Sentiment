@@ -15,11 +15,45 @@
         }
         img{
             width:100%;
-            height:400px;
+            height:300px;
            object-fit:scale-down;
+            animation: glowBlue 1s infinite alternate
+        }
+        /*-webkit-filter: drop-shadow(12px 12px -10px #aef4af);*/
+        @keyframes glowGreen {
+          from {
+              -webkit-filter: drop-shadow(12px 12px -10px #068f0f);
+              filter: drop-shadow(12px 12px -10px #068f0f);
+          }
+          to {
+              -webkit-filter: drop-shadow(12px 12px 10px #068f0f);
+              filter: drop-shadow(12px 12px 10px #068f0f);
+          }
+        }
+
+        @keyframes glowRed {
+          from {
+              -webkit-filter: drop-shadow(12px 12px -10px #fa0905);
+              filter: drop-shadow(12px 12px -10px #fa0905);
+          }
+          to {
+              -webkit-filter: drop-shadow(12px 12px 10px #fa0905);
+              filter: drop-shadow(12px 12px 10px #fa0905);
+          }
+        }
+
+        @keyframes glowBlue {
+          from {
+              -webkit-filter: drop-shadow(12px 12px -10px #041cba);
+              filter: drop-shadow(12px 12px -10px #041cba);
+          }
+          to {
+              -webkit-filter: drop-shadow(12px 12px 10px #041cba);
+              filter: drop-shadow(12px 12px 10px #041cba);
+          }
         }
     </style>
-
+     <div class="shadow"></div>
      <div id="banner">
         <div class="inline-block">
             {% load static %}

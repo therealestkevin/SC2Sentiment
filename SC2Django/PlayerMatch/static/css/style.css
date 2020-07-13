@@ -1,0 +1,40 @@
+.shadowTest {
+  width: 200px;
+  height: 200px;
+  border-radius: 100px;
+  background-color: #ccc;
+  animation: glowGreen 1s infinite alternate;
+}
+
+        @keyframes glowGreen {
+          from {
+              -webkit-filter: drop-shadow(12px 12px -10px #068f0f);
+              filter: drop-shadow(12px 12px -10px #068f0f);
+          }
+          to {
+              -webkit-filter: drop-shadow(12px 12px 10px #068f0f);
+              filter: drop-shadow(12px 12px 10px #068f0f);
+          }
+        }
+
+        @keyframes glowRed {
+          from {
+              -webkit-filter: drop-shadow(12px 12px -10px #fa0905);
+              filter: drop-shadow(12px 12px -10px #fa0905);
+          }
+          to {
+              -webkit-filter: drop-shadow(12px 12px 10px #fa0905);
+              filter: drop-shadow(12px 12px 10px #fa0905);
+          }
+        }
+
+        @keyframes glowBlue {
+          from {
+              -webkit-filter: drop-shadow(12px 12px -10px #041cba);
+              filter: drop-shadow(12px 12px -10px #041cba);
+          }
+          to {
+              -webkit-filter: drop-shadow(12px 12px 10px #041cba);
+              filter: drop-shadow(12px 12px 10px #041cba);
+          }
+        }
