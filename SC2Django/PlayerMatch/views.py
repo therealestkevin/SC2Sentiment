@@ -22,7 +22,7 @@ class FileFieldView(FormView):
                 break
             for num in range(0, len(i.messages)):
                 if i.messageSentiments[num] < -0.5:
-                    negativeMessages.append('"' + i.messages[num] + '"     ' + "       -" + i.username)
+                    negativeMessages.append('"' + i.messages[num] + '"' + "&nbsp;&nbsp;-" + i.username)
                     break
 
         context['curMessages'] = negativeMessages
@@ -37,7 +37,7 @@ class FileFieldView(FormView):
 
     def get_success_url(self):
         #return reverse('PlayerMatch:replay-upload')
-        return reverse('replay-upload')
+        return self.request.path
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
