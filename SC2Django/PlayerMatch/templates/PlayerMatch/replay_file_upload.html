@@ -38,6 +38,13 @@
             transition-property: transform;
         }
 
+        .hvr-grow-card:hover {
+            animation-play-state: paused;
+            filter: drop-shadow(0px 0px 15px blue);
+            transform: scale(1.1);
+
+        }
+
         .hvr-grow {
             display: inline-block;
             vertical-align: middle;
@@ -192,7 +199,7 @@
     </div>
     &nbsp;&nbsp;
     <div class="card-deck mb-3 text-center " style="width: 90vw;margin-left: 5vw">
-        <div class="card mb-4 shadow-sm ">
+        <div class="card mb-4 shadow-sm d-flex ">
             <div class="card-header">
                 <h4 class="card-title pricing-card-title">Terran</h4>
             </div>
@@ -200,13 +207,72 @@
                 {% load static %}
                 <img class="hvr-grow-card" src="{% static "images/terran.png" %}" alt="Terran">
             </div>
+            <div class="card-footer">
+                <div class="container">
+                    <div class="row justify-content-center" style="align-items: center">
+                        <div class="col-3">
+                            {% if terran < protoss and terran < zerg %}
+                                {% load static %}
+                                <img src="{% static "images/salt.gif" %}" alt="salt"
+                                     style="width:100%">
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            <h1 class="display-3 font-weight-bold text-center">{{ terran }}</h1>
+                        </div>
+                        <div class="col-3">
+                            <div class="col">
+                                {% load static %}
+                                <img class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}" alt="upArrow"
+                                     style="width:100%">
+                            </div>
+                            <div class="col">
+                                {% load static %}
+                                <img class="fadeDownArrow" src="{% static "images/downwardsArrow.png" %}"
+                                     alt="downArrow" style="width:100%">
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card mb-4 shadow-sm">
             <div class="card-header">
                 <h4 class="card-title pricing-card-title">Zerg</h4>
             </div>
             <div class="card-body">
-
+                {% load static %}
+                <img class=hvr-grow-card src="{% static "images/zerg.png" %}" alt="Zerg">
+            </div>
+            <div class="card-footer">
+                <div class="container">
+                    <div class="row" style="align-items: center">
+                        <div class="col-3">
+                            {% if zerg < terran and zerg < protoss %}
+                                {% load static %}
+                                <img src="{% static "images/salt.gif" %}" alt="salt"
+                                     style="width:100%">
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            <h1 class="display-3 font-weight-bold text-center">{{ zerg }}</h1>
+                        </div>
+                        <div class="col-3">
+                            <div class="col">
+                                {% load static %}
+                                <img class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}" alt="upArrow"
+                                     style="width:100%">
+                            </div>
+                            <div class="col">
+                                {% load static %}
+                                <img class="fadeDownArrow" src="{% static "images/downwardsArrow.png" %}"
+                                     alt="downArrow" style="width:100%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="card mb-4 shadow-sm">
@@ -214,7 +280,36 @@
                 <h4 class="card-title pricing-card-title">Protoss</h4>
             </div>
             <div class="card-body">
-
+                {% load static %}
+                <img class=hvr-grow-card src="{% static "images/protoss.png" %}" alt="Protoss">
+            </div>
+            <div class="card-footer">
+                <div class="container">
+                    <div class="row" style="align-items: center">
+                        <div class="col-3">
+                            {% if protoss < terran and protoss < zerg %}
+                                {% load static %}
+                                <img src="{% static "images/salt.gif" %}" alt="salt"
+                                     style="width:100%">
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            <h1 class="display-3 font-weight-bold text-center">{{ protoss }}</h1>
+                        </div>
+                        <div class="col-3">
+                            <div class="col">
+                                {% load static %}
+                                <img class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}" alt="upArrow"
+                                     style="width:100%">
+                            </div>
+                            <div class="col">
+                                {% load static %}
+                                <img class="fadeDownArrow" src="{% static "images/downwardsArrow.png" %}"
+                                     alt="downArrow" style="width:100%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -222,7 +317,7 @@
 
 
 
-    <div id="upArrow">
+    <!--<div id="upArrow">
         <div class="inline-block">
             {% load static %}
             <img class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}" alt="upArrow">
@@ -270,6 +365,7 @@
             <img class="fadeDownArrow" src="{% static "images/downwardsArrow.png" %}" alt="downArrow">
         </div>
     </div>
+    -->
 
     <div class="ButtonDiv">
         <h2>This is a heading</h2>
@@ -284,4 +380,6 @@
             <input type="submit" class="btn" value="Click" name="process_btn">
         </form>
     </div>
+
+
 {% endblock %}

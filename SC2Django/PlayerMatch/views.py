@@ -3,12 +3,25 @@ from django.views.generic.edit import FormView
 from .forms import FileFieldForm
 from .tasks import process_uploaded_replay, selenium_process_replay
 from django.urls import reverse
+from .models import OverallSentiment
 # Create your views here.
 
 
 class FileFieldView(FormView):
     form_class = FileFieldForm
     template_name = 'PlayerMatch/replay_file_upload.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(FileFieldView, self).get_context_data(**kwargs)
+        curSentiments = OverallSentiment.objects.get(pk=1)
+
+        context['terran'] = str(round((curSentiments.terranSentimentOverall/curSentiments.terranSentimentCount)*100, 2))
+
+        context['zerg'] = str(round((curSentiments.zergSentimentOverall/curSentiments.zergSentimentCount)*100, 2))
+
+        context['protoss'] = str(round((curSentiments.protossSentimentOverall/curSentiments.protossSentimentCount)*100, 2))
+
+        return context
 
     def get_success_url(self):
         #return reverse('PlayerMatch:replay-upload')
