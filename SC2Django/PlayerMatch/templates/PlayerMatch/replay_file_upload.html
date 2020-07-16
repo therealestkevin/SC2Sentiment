@@ -7,9 +7,8 @@
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
     <!-- JS, Popper.js, and jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-            crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
             integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
             crossorigin="anonymous"></script>
@@ -31,6 +30,7 @@
             object-fit: contain;
             -webkit-filter: none;
             animation: glowGreen 0.5s alternate;
+            animation-play-state: paused;
             animation-iteration-count: 2;
             transition: ease-in-out;
             transition-duration: 0.3s;
@@ -38,7 +38,6 @@
         }
 
         .hvr-grow-card:hover {
-            animation-play-state: paused;
             filter: drop-shadow(0px 0px 15px blue);
             transform: scale(1.1);
 
@@ -179,15 +178,7 @@
 
     </style>
 
-    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
-        <h5 class="my-0 mr-md-auto font-weight-normal">SC2 Sentiment</h5>
-        <nav class="my-2 my-md-0 mr-md-3">
-            <a class="p-2 text-dark" href="#">Home</a>
-            <a class="p-2 text-dark" href="#">About</a>
-            <a class="p-2 text-dark" href="#">More</a>
-        </nav>
-        <a class="btn btn-outline-primary" href="#">Contact</a>
-    </div>
+
 
     <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
         <h1 class="display-4">Starcraft 2 Sentiment</h1>
@@ -415,26 +406,59 @@
         </div>
     </div>
     -->
-    <div class="jumbotron" style="display: flex;flex-direction: column;align-items: center;justify-content: center;">
-        <form action='.' method='post' enctype="multipart/form-data">
+    <div id="formHolder" class="jumbotron"
+         style="display: flex;flex-direction: column;align-items: center;justify-content: center;">
+        <form id="uploadForm" action='.' method='post' enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-group font-weight-bold h5">
-                {{ form.replay_file | as_crispy_field }}
+            <div id="fileDiv" class="form-group font-weight-bold h5">
+                {{ form.replay_file }}
                 <!--<label class="custom-file-label" for="customFile">Choose Replay File...</label>-->
             </div>
-
             <input type="submit" class="btn btn-outline-primary" value="Upload">
         </form>
+        <div id="successAlert" class="alert alert-success" style="visibility: hidden">
+            <strong>Success!</strong> You uploaded your replays
+        </div>
+        <div id="dangerAlert" class="alert alert-danger" style="visibility:hidden;">
+            <strong>Danger!</strong> Your upload failed. Please check that you uploaded a proper replay
+        </div>
+
     </div>
 
 
 
     <div class="ButtonDiv" style="padding-top: 1vw">
         &nbsp;&nbsp;
-        <form method="post" action=".">{% csrf_token %}
+        <form id="clickTest" method="post" action=".">{% csrf_token %}
             <input type="submit" class="btn btn-outline-primary" value="Click" name="process_btn">
         </form>
     </div>
+
+
+    <script>
+        var csrfCurrent = {{csrf_token}}
+            $("#uploadForm").submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    headers: {'X-CSRFToken': csrfCurrent},
+                    type: 'POST',
+                    url: '{% url "replay-upload" %}',
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        console.log("Success: " + data)
+                        $("#dangerAlert").style.visibility = "hidden";
+                        $("#successAlert").style.visibility = "visible";
+                    },
+                    error: function (data) {
+                        console.log("Failed: " + data)
+                        $("#successAlert").style.visibility = "hidden";
+                        $("#dangerAlert").style.visibility = "visible";
+                    }
+                });
+            });
+
+
+    </script>
 
 
 {% endblock %}
