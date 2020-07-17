@@ -8,13 +8,7 @@
 
     <!-- JS, Popper.js, and jQuery -->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-            crossorigin="anonymous"></script>
+
     <style>
         .ButtonDiv {
             text-align: center;
@@ -406,26 +400,27 @@
         </div>
     </div>
     -->
+
+
     <div id="formHolder" class="jumbotron"
          style="display: flex;flex-direction: column;align-items: center;justify-content: center;">
-        <form id="uploadForm" action='.' method='post' enctype="multipart/form-data">
+        <form id="uploadForm" action='{% url "replay-upload" %}' method='post' enctype="multipart/form-data">
             {% csrf_token %}
             <div id="fileDiv" class="form-group font-weight-bold h5">
-                {{ form.replay_file }}
+                {{ form.replay_file | as_crispy_field}}
                 <!--<label class="custom-file-label" for="customFile">Choose Replay File...</label>-->
             </div>
-            <input type="submit" class="btn btn-outline-primary" value="Upload">
+            <input id="submitButton" type="submit" class="btn btn-outline-primary" value="Upload">
         </form>
-        <div id="successAlert" class="alert alert-success" style="visibility: hidden">
+
+        <!--<div id="successAlert" class="alert alert-success" style="visibility: hidden">
             <strong>Success!</strong> You uploaded your replays
         </div>
         <div id="dangerAlert" class="alert alert-danger" style="visibility:hidden;">
             <strong>Danger!</strong> Your upload failed. Please check that you uploaded a proper replay
-        </div>
+        </div>-->
 
     </div>
-
-
 
     <div class="ButtonDiv" style="padding-top: 1vw">
         &nbsp;&nbsp;
@@ -435,30 +430,41 @@
     </div>
 
 
-    <script>
-        var csrfCurrent = {{csrf_token}}
-            $("#uploadForm").submit(function (e) {
-                e.preventDefault();
-                $.ajax({
-                    headers: {'X-CSRFToken': csrfCurrent},
-                    type: 'POST',
-                    url: '{% url "replay-upload" %}',
-                    data: $(this).serialize(),
-                    success: function (data) {
-                        console.log("Success: " + data)
-                        $("#dangerAlert").style.visibility = "hidden";
-                        $("#successAlert").style.visibility = "visible";
-                    },
-                    error: function (data) {
-                        console.log("Failed: " + data)
-                        $("#successAlert").style.visibility = "hidden";
-                        $("#dangerAlert").style.visibility = "visible";
-                    }
-                });
+
+    <!--<script type="text/javascript">
+        $('#uploadForm').submit(function (e) {
+            e.preventDefault();
+            var serializedData = $("#uploadForm").serialize()
+            $.ajax({
+                headers: {'X-CSRFToken': {{csrf_token}}},
+                type: 'POST',
+                url: '{% url "replay-upload" %}',
+                data: serializedData,
+                contentType: 'multipart/form-data',
+                dataType: 'json',
+                success: function (data) {
+                    alert("You Did It")
+                    $("#dangerAlert").style.visibility = "hidden";
+                    $("#successAlert").style.visibility = "visible";
+                },
+                error: function (data) {
+                    console.log("Failed: " + data)
+                    $("#successAlert").style.visibility = "hidden";
+                    $("#dangerAlert").style.visibility = "visible";
+                },
             });
+            return false
+        });
+    </script>-->
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+            crossorigin="anonymous"></script>
 
-    </script>
 
 
 {% endblock %}

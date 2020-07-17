@@ -2,11 +2,10 @@ from django.shortcuts import render
 from django.views.generic.edit import FormView
 from .forms import FileFieldForm
 from .tasks import process_uploaded_replay, selenium_process_replay
-from django.http import JsonResponse, HttpResponse
-import json
-
+from django.views.generic import TemplateView
 from .models import OverallSentiment, PlayerMatchSingular
-
+from django.contrib import messages
+from django.urls import reverse
 
 # Create your views here.
 
@@ -15,7 +14,11 @@ class FileFieldView(FormView):
     form_class = FileFieldForm
     template_name = 'PlayerMatch/replay_file_upload.html'
 
+    def get_success_url(self):
+        return reverse('thanks-page')
+
     def get_context_data(self, **kwargs):
+
         context = super(FileFieldView, self).get_context_data(**kwargs)
         curSentiments = OverallSentiment.objects.get(pk=1)
         allPlayers = PlayerMatchSingular.objects.all()
@@ -42,19 +45,22 @@ class FileFieldView(FormView):
         return context
 
     def post(self, request, *args, **kwargs):
-        requestFiles = {}
         if request.POST.get('process_btn'):
             selenium_process_replay()
-        if request.is_ajax and request.method == "POST":
-            form = FileFieldForm(request.POST)
-            files = request.FILES.getlist('replay_file')
 
-            requestResponse = []
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+        files = request.FILES.getlist('replay_file')
+
+        if form.is_valid():
             for f in files:
                 # Verify Correct Files
                 if f.name.endswith('.SC2Replay'):
                     print(f.name)
-                    requestResponse.append(f.name)
-                    process_uploaded_replay(f.file)
-            requestFiles['data'] = requestResponse
-            return JsonResponse(requestFiles)
+                    #process_uploaded_replay(f.file)
+                else:
+                    return self.form_invalid(form)
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
