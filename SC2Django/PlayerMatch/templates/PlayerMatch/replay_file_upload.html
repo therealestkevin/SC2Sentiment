@@ -3,8 +3,17 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+            crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 
     <!-- JS, Popper.js, and jQuery -->
 
@@ -18,20 +27,37 @@
             display: inline-block;
         }
 
-        .hvr-grow-card {
+        .hvr-grow-card-green {
             max-width: 32vw;
             height: 18vw;
             object-fit: contain;
             -webkit-filter: none;
             animation: glowGreen 0.5s alternate;
-            animation-play-state: paused;
             animation-iteration-count: 2;
             transition: ease-in-out;
             transition-duration: 0.3s;
             transition-property: transform;
         }
 
-        .hvr-grow-card:hover {
+        .hvr-grow-card-red {
+            max-width: 32vw;
+            height: 18vw;
+            object-fit: contain;
+            -webkit-filter: none;
+            animation: glowRed 0.5s alternate;
+            animation-iteration-count: 2;
+            transition: ease-in-out;
+            transition-duration: 0.3s;
+            transition-property: transform;
+        }
+
+        .hvr-grow-card-green:hover {
+            filter: drop-shadow(0px 0px 15px blue);
+            transform: scale(1.1);
+
+        }
+
+        .hvr-grow-card-red:hover {
             filter: drop-shadow(0px 0px 15px blue);
             transform: scale(1.1);
 
@@ -75,23 +101,23 @@
 
         @keyframes glowRed {
             from {
-                -webkit-filter: drop-shadow(12px 12px -10px #fa0905);
-                filter: drop-shadow(12px 12px -10px #fa0905);
+                -webkit-filter: drop-shadow(0px 0px -15px #fa0905);
+                filter: drop-shadow(0px 0px -15px #fa0905);
             }
             to {
-                -webkit-filter: drop-shadow(12px 12px 10px #fa0905);
-                filter: drop-shadow(12px 12px 10px #fa0905);
+                -webkit-filter: drop-shadow(0px 0px 15px #fa0905);
+                filter: drop-shadow(0px 0px 15px #fa0905);
             }
         }
 
         @keyframes glowBlue {
             from {
-                -webkit-filter: drop-shadow(12px 12px -10px #041cba);
-                filter: drop-shadow(12px 12px -10px #041cba);
+                -webkit-filter: drop-shadow(0px 0px -15px #041cba);
+                filter: drop-shadow(0px 0px -15px #041cba);
             }
             to {
-                -webkit-filter: drop-shadow(12px 12px 10px #041cba);
-                filter: drop-shadow(12px 12px 10px #041cba);
+                -webkit-filter: drop-shadow(0px 0px 15px #041cba);
+                filter: drop-shadow(0px 0px 15px #041cba);
             }
         }
 
@@ -101,6 +127,7 @@
             object-fit: scale-down;
             filter: invert(59%) sepia(47%) saturate(631%) hue-rotate(63deg) brightness(93%) contrast(88%);
             animation: fadeOut ease 1s;
+            animation-play-state: paused;
             animation-fill-mode: forwards;
             -webkit-animation: fadeOut ease 1s;
             -webkit-animation-fill-mode: forwards;
@@ -116,6 +143,7 @@
             object-fit: scale-down;
             filter: invert(32%) sepia(35%) saturate(2084%) hue-rotate(327deg) brightness(91%) contrast(88%);
             animation: fadeOut ease 1s;
+            animation-play-state: paused;
             animation-fill-mode: forwards;
             -webkit-animation: fadeOut ease 1s;
             -webkit-animation-fill-mode: forwards;
@@ -189,7 +217,8 @@
             </div>
             <div class="card-body">
                 {% load static %}
-                <img class="hvr-grow-card" src="{% static "images/terran.png" %}" alt="Terran">
+                <img id="terranIcon" class="hvr-grow-card-green" src="{% static "images/terran.png" %}" alt="Terran"
+                     style="animation-play-state: paused">
             </div>
             <div class="card-footer">
                 <div class="container">
@@ -202,18 +231,21 @@
                             {% endif %}
                         </div>
                         <div class="col-6">
-                            <h1 class="display-4 font-weight-bold text-center">{{ terran }}</h1>
+                            <h1 id="terranSent" class="display-4 font-weight-bold text-center">{{ terran }}</h1>
                         </div>
                         <div class="col-3">
                             <div class="col">
                                 {% load static %}
-                                <img class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}" alt="upArrow"
-                                     style="width:100%">
+                                <img id="terranUpArrow" class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}"
+                                     alt="upArrow"
+                                     style="width:100%; animation-play-state: paused; visibility: hidden">
                             </div>
                             <div class="col">
                                 {% load static %}
-                                <img class="fadeDownArrow" src="{% static "images/downwardsArrow.png" %}"
-                                     alt="downArrow" style="width:100%">
+                                <img id="terranDownArrow" class="fadeDownArrow"
+                                     src="{% static "images/downwardsArrow.png" %}"
+                                     alt="downArrow"
+                                     style="width:100%; animation-play-state: paused; visibility: hidden">
                             </div>
                         </div>
 
@@ -228,7 +260,8 @@
             </div>
             <div class="card-body">
                 {% load static %}
-                <img class=hvr-grow-card src="{% static "images/zerg.png" %}" alt="Zerg">
+                <img id="zergIcon" class="hvr-grow-card-green" src="{% static "images/zerg.png" %}" alt="Zerg"
+                     style="animation-play-state: paused">
             </div>
             <div class="card-footer">
                 <div class="container">
@@ -241,18 +274,21 @@
                             {% endif %}
                         </div>
                         <div class="col-6">
-                            <h1 class="display-4 font-weight-bold text-center">{{ zerg }}</h1>
+                            <h1 id="zergSent" class="display-4 font-weight-bold text-center">{{ zerg }}</h1>
                         </div>
                         <div class="col-3">
                             <div class="col">
                                 {% load static %}
-                                <img class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}" alt="upArrow"
-                                     style="width:100%">
+                                <img id="zergUpArrow" class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}"
+                                     alt="upArrow"
+                                     style="width:100%; animation-play-state: paused; visibility: hidden">
                             </div>
                             <div class="col">
                                 {% load static %}
-                                <img class="fadeDownArrow" src="{% static "images/downwardsArrow.png" %}"
-                                     alt="downArrow" style="width:100%">
+                                <img id="zergDownArrow" class="fadeDownArrow"
+                                     src="{% static "images/downwardsArrow.png" %}"
+                                     alt="downArrow"
+                                     style="width:100%; animation-play-state: paused; visibility: hidden">
                             </div>
                         </div>
                     </div>
@@ -265,7 +301,8 @@
             </div>
             <div class="card-body">
                 {% load static %}
-                <img class=hvr-grow-card src="{% static "images/protoss.png" %}" alt="Protoss">
+                <img id="protossIcon" class="hvr-grow-card-green" src="{% static "images/protoss.png" %}" alt="Protoss"
+                     style="animation-play-state: paused">
             </div>
             <div class="card-footer">
                 <div class="container">
@@ -278,18 +315,21 @@
                             {% endif %}
                         </div>
                         <div class="col-6">
-                            <h1 class="display-4 font-weight-bold text-center">{{ protoss }}</h1>
+                            <h1 id="protossSent" class="display-4 font-weight-bold text-center">{{ protoss }}</h1>
                         </div>
                         <div class="col-3">
                             <div class="col">
                                 {% load static %}
-                                <img class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}" alt="upArrow"
-                                     style="width:100%">
+                                <img id="protossUpArrow" class="fadeUpArrow"
+                                     src="{% static "images/upwardsArrow.png" %}" alt="upArrow"
+                                     style="width:100%; animation-play-state: paused; visibility: hidden">
                             </div>
                             <div class="col">
                                 {% load static %}
-                                <img class="fadeDownArrow" src="{% static "images/downwardsArrow.png" %}"
-                                     alt="downArrow" style="width:100%">
+                                <img id="protossDownArrow" class="fadeDownArrow"
+                                     src="{% static "images/downwardsArrow.png" %}"
+                                     alt="downArrow"
+                                     style="width:100%; animation-play-state: paused; visibility: hidden">
                             </div>
                         </div>
                     </div>
@@ -407,7 +447,7 @@
         <form id="uploadForm" action='{% url "replay-upload" %}' method='post' enctype="multipart/form-data">
             {% csrf_token %}
             <div id="fileDiv" class="form-group font-weight-bold h5">
-                {{ form.replay_file | as_crispy_field}}
+                {{ form.replay_file | as_crispy_field }}
                 <!--<label class="custom-file-label" for="customFile">Choose Replay File...</label>-->
             </div>
             <input id="submitButton" type="submit" class="btn btn-outline-primary" value="Upload">
@@ -428,8 +468,133 @@
             <input type="submit" class="btn btn-outline-primary" value="Click" name="process_btn">
         </form>
     </div>
+    <button id="helloButton">hi</button>
+    <script type="text/javascript">
+        $("#helloButton").click(function (e) {
+            console.log("button pressed")
+            var terranIcon = document.getElementById('terranIcon');
+            terranIcon.className = 'hvr-grow-card-red';
+            terranIcon.style.animationPlayState = "running";
+            terranIcon.style.animation = 'none';
+            terranIcon.offsetHeight;
+            terranIcon.style.animation = null;
 
+            var terranUpArrow = document.getElementById('terranUpArrow');
+            terranUpArrow.style.visibility = "visible";
+            terranUpArrow.style.animationPlayState = "running";
+            terranUpArrow.style.animation = 'none';
+            terranUpArrow.offsetHeight;
+            terranUpArrow.style.animation = null;
 
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //setInterval(refreshSent, 3000);
+        });
+
+        function refreshSent() {
+            var curTerran = parseFloat($('#terranSent').text());
+            var curZerg = parseFloat($('#zergSent').text());
+            var curProtoss = parseFloat($('#protossSent').text());
+            $.ajax({
+                url: {% url 'sentiment-data' %},
+                success: function (data) {
+                    var newTerran = parseFloat(data['terran']);
+                    var terranIcon = document.getElementById('terranIcon');
+
+                    if (newTerran > curTerran) {
+                        terranIcon.className = 'hvr-grow-card-green';
+                        terranIcon.style.animationPlayState = "running";
+                        terranIcon.style.animation = 'none';
+                        terranIcon.offsetHeight;
+                        terranIcon.style.animation = null;
+                        var terranUpArrow = document.getElementById('terranUpArrow');
+                        terranUpArrow.style.visibility = "visible";
+                        terranUpArrow.style.animationPlayState = "running";
+                        terranUpArrow.style.animation = 'none';
+                        terranUpArrow.offsetHeight;
+                        terranUpArrow.style.animation = null;
+                    }else if(newTerran < curTerran) {
+                        terranIcon.className = 'hvr-grow-card-red';
+                        terranIcon.style.animationPlayState = "running";
+                        terranIcon.style.animation = 'none';
+                        terranIcon.offsetHeight;
+                        terranIcon.style.animation = null;
+                        var terranDownArrow = document.getElementById('terranDownArrow');
+                        terranDownArrow.style.visibility = "visible";
+                        terranDownArrow.style.animationPlayState = "running";
+                        terranDownArrow.style.animation = 'none';
+                        terranDownArrow.offsetHeight;
+                        terranDownArrow.style.animation = null;
+                    }
+
+                    var newZerg = parseFloat(data['zerg']);
+                    var zergIcon = document.getElementById('zergIcon');
+
+                    if(newZerg > curZerg){
+                        zergIcon.className = 'hvr-grow-card-green';
+                        zergIcon.style.animationPlayState = "running";
+                        zergIcon.style.animation = 'none';
+                        zergIcon.offsetHeight;
+                        zergIcon.style.animation = null;
+                        var zergUpArrow = document.getElementById('zergUpArrow');
+                        zergUpArrow.style.visibility = "visible";
+                        zergUpArrow.style.animationPlayState = "running";
+                        zergUpArrow.style.animation = 'none';
+                        zergUpArrow.offsetHeight;
+                        zergUpArrow.style.animation = null;
+                    }else if(newZerg < curZerg){
+                        zergIcon.className = 'hvr-grow-card-red';
+                        zergIcon.style.animationPlayState = "running";
+                        zergIcon.style.animation = 'none';
+                        zergIcon.offsetHeight;
+                        zergIcon.style.animation = null;
+                        var zergDownArrow = document.getElementById('zergDownArrow');
+                        zergDownArrow.style.visibility = "visible";
+                        zergDownArrow.style.animationPlayState = "running";
+                        zergDownArrow.style.animation = 'none';
+                        zergDownArrow.offsetHeight;
+                        zergDownArrow.style.animation = null;
+                    }
+
+                    var newProtoss = parseFloat(data['protoss']);
+                    var protossIcon = document.getElementById('protossIcon');
+
+                    if(newProtoss > curProtoss){
+                        protossIcon.className = 'hvr-grow-card-green';
+                        protossIcon.style.animationPlayState = "running";
+                        protossIcon.style.animation = 'none';
+                        protossIcon.offsetHeight;
+                        protossIcon.style.animation = null;
+                        var protossUpArrow = document.getElementById('protossUpArrow');
+                        protossUpArrow.style.visibility = "visible";
+                        protossUpArrow.style.animationPlayState = "running";
+                        protossUpArrow.style.animation = 'none';
+                        protossUpArrow.offsetHeight;
+                        protossUpArrow.style.animation = null;
+                    }else if(newProtoss < curProtoss){
+                        protossIcon.className = 'hvr-grow-card-red';
+                        protossIcon.style.animationPlayState = "running";
+                        protossIcon.style.animation = 'none';
+                        protossIcon.offsetHeight;
+                        protossIcon.style.animation = null;
+                        var protossDownArrow = document.getElementById('protossDownArrow');
+                        protossDownArrow.style.visibility = "visible";
+                        protossDownArrow.style.animationPlayState = "running";
+                        protossDownArrow.style.animation = 'none';
+                        protossDownArrow.offsetHeight;
+                        protossDownArrow.style.animation = null;
+                    }
+
+                    
+                    $('#terranSent').html(data['terran']);
+                    $('#zergSent').html(data['zerg']);
+                    $('#protossSent').html(data['protoss']);
+                }
+            });
+        }
+    </script>
 
     <!--<script type="text/javascript">
         $('#uploadForm').submit(function (e) {
@@ -457,13 +622,7 @@
         });
     </script>-->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-            crossorigin="anonymous"></script>
+
 
 
 

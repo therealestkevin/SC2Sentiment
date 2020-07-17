@@ -6,8 +6,18 @@ from django.views.generic import TemplateView
 from .models import OverallSentiment, PlayerMatchSingular
 from django.contrib import messages
 from django.urls import reverse
+from django.http import JsonResponse
 
 # Create your views here.
+
+
+def sentiment_data(request):
+    curSentiments = OverallSentiment.objects.get(pk=1)
+    return JsonResponse({
+        'terran': '{:.2f}'.format(round((curSentiments.terranSentimentOverall / curSentiments.terranSentimentCount) * 100, 2)),
+        'zerg': '{:.2f}'.format(round((curSentiments.zergSentimentOverall / curSentiments.zergSentimentCount) * 100, 2)),
+        'protoss': '{:.2f}'.format(round((curSentiments.protossSentimentOverall / curSentiments.protossSentimentCount) * 100, 2))
+    })
 
 
 class FileFieldView(FormView):
@@ -34,13 +44,11 @@ class FileFieldView(FormView):
 
         context['curMessages'] = negativeMessages
 
-        context['terran'] = str(
-            round((curSentiments.terranSentimentOverall / curSentiments.terranSentimentCount) * 100, 2))
+        context['terran'] = '{:.2f}'.format(round((curSentiments.terranSentimentOverall / curSentiments.terranSentimentCount) * 100, 2))
 
-        context['zerg'] = str(round((curSentiments.zergSentimentOverall / curSentiments.zergSentimentCount) * 100, 2))
+        context['zerg'] = '{:.2f}'.format(round((curSentiments.zergSentimentOverall / curSentiments.zergSentimentCount) * 100, 2))
 
-        context['protoss'] = str(
-            round((curSentiments.protossSentimentOverall / curSentiments.protossSentimentCount) * 100, 2))
+        context['protoss'] = '{:.2f}'.format(round((curSentiments.protossSentimentOverall / curSentiments.protossSentimentCount) * 100, 2))
 
         return context
 
