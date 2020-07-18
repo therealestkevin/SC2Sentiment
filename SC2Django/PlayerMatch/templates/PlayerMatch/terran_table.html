@@ -11,4 +11,34 @@
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
             crossorigin="anonymous"></script>
 
+    <div class="jumbotron" style="display: flex;flex-direction: column;align-items: center;justify-content: center; text-align: center">
+        <h1 class="display-4">Last 100 Terran Replays</h1>
+        <p class="lead">Note: Each value in Message Sentiments pairs with its corresponding message in the Messages list.
+        The sum of all the message sentiments is averaged to ascretain the overall sentiment of that player in a particular match.</p>
+        <table class = "table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Faction</th>
+                    <th scope="col" style="white-space: nowrap">Overall Sentiment</th>
+                    <th scope="col">Messages</th>
+                    <th scope="col">Message Sentiments</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for player in last_hundred %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{player.username}}</td>
+                    <td>{{ player.curRace }}</td>
+                    <td>{{ player.compoundSentiment | floatformat:2 }}</td>
+                    <td>{{ player.messages }}{% include "comma.html" %}</td>
+                    <td>{{ player.messageSentiments }}{% include "comma.html" %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 {% endblock %}

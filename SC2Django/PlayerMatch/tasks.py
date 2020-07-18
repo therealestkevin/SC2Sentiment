@@ -109,7 +109,7 @@ def analyze_sentiments(archive_, protocol_):
     for i in range(len(gameDetails['m_playerList'])):
         curPlayerName = strip_html(playerList[i]['m_name'].decode("utf-8"))
         curRacePlayerMatch = ""
-
+        greenLight = True
         curRace = str(playerList[i]['m_race'])
         if "Zerg" in curRace:
             overallSentiments.zergSentimentCount += 1
@@ -129,8 +129,11 @@ def analyze_sentiments(archive_, protocol_):
             overallSentiments.protossSentimentOverall += compoundUserSentiments[i]
 
             curRacePlayerMatch = "Protoss"
+        else:
+            greenLight = False
 
-        PlayerMatchSingular.objects.create(username=curPlayerName, curRace=curRacePlayerMatch, uniqueID=uniqueIdentifier,
+        if greenLight:
+            PlayerMatchSingular.objects.create(username=curPlayerName, curRace=curRacePlayerMatch, uniqueID=uniqueIdentifier,
                                        compoundSentiment=compoundUserSentiments[i], messages=listmessages[i],
                                        messageSentiments=listMessageSentiments[i])
     overallSentiments.save()

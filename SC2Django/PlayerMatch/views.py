@@ -107,10 +107,31 @@ class FileFieldView(FormView):
 class TerranTableView(TemplateView):
     template_name = 'PlayerMatch/terran_table.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lastHundred = list(PlayerMatchSingular.objects.filter(curRace="Terran").order_by('-id')[:100])
+        context["last_hundred"] = lastHundred
+
+        return context
+
 
 class ZergTableView(TemplateView):
     template_name = 'PlayerMatch/zerg_table.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lastHundred = list(PlayerMatchSingular.objects.filter(curRace="Zerg").order_by('-id')[:100])
+        context["last_hundred"] = lastHundred
+
+        return context
+
 
 class ProtossTableView(TemplateView):
     template_name = 'PlayerMatch/protoss_table.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lastHundred = list(PlayerMatchSingular.objects.filter(curRace="Protoss").order_by('-id')[:100])
+        context["last_hundred"] = lastHundred
+
+        return context

@@ -192,9 +192,12 @@
                 <h4 class="card-title pricing-card-title">Terran</h4>
             </div>
             <div class="card-body">
-                {% load static %}
+                <a href="{% url "terran-table" %}">
+                    {% load static %}
                 <img id="terranIcon" class="hvr-grow-card-green" src="{% static "images/terran.png" %}" alt="Terran"
                      style="animation-play-state: paused">
+                </a>
+
             </div>
             <div class="card-footer">
                 <div class="container">
@@ -240,9 +243,11 @@
                 <h4 class="card-title pricing-card-title">Zerg</h4>
             </div>
             <div class="card-body">
+                <a href="{% url "zerg-table" %}">
                 {% load static %}
                 <img id="zergIcon" class="hvr-grow-card-green" src="{% static "images/zerg.png" %}" alt="Zerg"
                      style="animation-play-state: paused">
+                </a>
             </div>
             <div class="card-footer">
                 <div class="container">
@@ -286,9 +291,11 @@
                 <h4 class="card-title pricing-card-title">Protoss</h4>
             </div>
             <div class="card-body">
+                <a href="{% url "protoss-table" %}">
                 {% load static %}
                 <img id="protossIcon" class="hvr-grow-card-green" src="{% static "images/protoss.png" %}" alt="Protoss"
                      style="animation-play-state: paused">
+                </a>
             </div>
             <div class="card-footer">
                 <div class="container">
@@ -404,6 +411,11 @@
             <input type="submit" class="btn btn-outline-primary" value="Click" name="process_btn">
         </form>
     </div>
+
+
+    <!--
+    Testing Code
+
     <button id="helloButton">hi</button>
     <script type="text/javascript">
         $("#helloButton").click(function (e) {
@@ -423,7 +435,9 @@
             terranUpArrow.style.animation = null;
 
         });
-    </script>
+    </script>-->
+
+    
     <script type="text/javascript">
         $(document).ready(function () {
             var startTerran = {{ terran }};
