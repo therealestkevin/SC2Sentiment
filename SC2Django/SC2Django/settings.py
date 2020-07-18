@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 from .secrets import AllSecrets
+from celery.schedules import crontab
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'about',
     'PlayerMatch',
     'crispy_forms',
+    'django_celery_beat',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -143,6 +145,9 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'America/Los_Angeles'
 
 CELERY_BEAT_SCHEDULE = {
-
+    'process-selenium-biweekly': {
+        'task': 'PlayerMatch.tasks.selenium_process_replay',
+        'schedule': crontab(hour=18, day_of_week='sat,wed')
+    }
 }
 

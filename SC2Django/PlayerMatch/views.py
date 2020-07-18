@@ -105,9 +105,9 @@ class FileFieldView(FormView):
                 # Verify Correct Files
                 if f.name.endswith('.SC2Replay'):
                     print(f.name)
-                    process_uploaded_replay(f.file)
+                    #process_uploaded_replay(f.file)
                     #Use Async in Production
-                    #process_uploaded_replay.delay(f.file)
+                    process_uploaded_replay.delay(f.file)
                 else:
                     return self.form_invalid(form)
             return self.form_valid(form)
