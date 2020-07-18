@@ -43,9 +43,10 @@ class FileFieldView(FormView):
 
         context = super(FileFieldView, self).get_context_data(**kwargs)
         curSentiments = OverallSentiment.objects.get(pk=1)
-        allPlayers = PlayerMatchSingular.objects.all()
+        allPlayers = PlayerMatchSingular.objects.order_by('pk').reverse()
 
         negativeMessages = []
+        positiveMessages = []
         for i in allPlayers:
             if len(negativeMessages) >= 100:
                 break
@@ -54,7 +55,17 @@ class FileFieldView(FormView):
                     negativeMessages.append('"' + i.messages[num] + '"' + "&nbsp;&nbsp;-" + i.username)
                     break
 
+        for i in allPlayers:
+            if len(positiveMessages) >= 100:
+                break
+            for num in range(0, len(i.messages)):
+                if i.messageSentiments[num] > 0.5:
+                    positiveMessages.append('"' + i.messages[num] + '"' + "&nbsp;&nbsp;-" + i.username)
+                    break
+
         context['curMessages'] = negativeMessages
+
+        context['curMessagesPositive'] = positiveMessages
 
         terranSent = '{:.2f}'.format(0.00)
         zergSent = '{:.2f}'.format(0.00)
