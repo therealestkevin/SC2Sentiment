@@ -102,3 +102,15 @@ class FileFieldView(FormView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+
+class TerranTableView(TemplateView):
+    template_name = 'PlayerMatch/terran_table.html'
+
+
+class ZergTableView(TemplateView):
+    template_name = 'PlayerMatch/zerg_table.html'
+
+
+class ProtossTableView(TemplateView):
+    template_name = 'PlayerMatch/protoss_table.html'

@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from PlayerMatch.views import FileFieldView, sentiment_data
+from PlayerMatch.views import FileFieldView, sentiment_data, TerranTableView, ZergTableView, ProtossTableView
 from django.views.generic import TemplateView
 
 
@@ -26,7 +26,9 @@ urlpatterns = [
     path('sentiment/', sentiment_data, name='sentiment-data'),
     path('thanks/', TemplateView.as_view(template_name="PlayerMatch/thanks.html"), name='thanks-page'),
     path('about/', TemplateView.as_view(template_name="about.html"), name='about-page'),
-    #path('PlayerMatch/', include('PlayerMatch.urls')),
+    path('terran/', TerranTableView.as_view(), name='terran-table'),
+    path('zerg/', ZergTableView.as_view(), name='zerg-table'),
+    path('protoss/', ProtossTableView.as_view(), name='protoss-table'),
 ]
 
 

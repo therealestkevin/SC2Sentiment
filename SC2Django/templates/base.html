@@ -1,6 +1,16 @@
 <!doctype html>
 <html lang="en">
+<style>
+    .newlink{
+        color: inherit;
+        text-decoration: none;
 
+    }
+    .newlink:hover{
+        color:inherit;
+        text-decoration: underline;
+    }
+</style>
 <head>
 <title> KevShoe Starcraft</title>
 
@@ -8,12 +18,22 @@
 
 <body>
 <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
-    <h5 class="my-0 mr-md-auto font-weight-normal" >SC2 Sentiment</h5>
+    <h5 class="my-0 mr-md-auto font-weight-normal"><a class="newlink" href="{% url "replay-upload" %}">SC2 Sentiment</a></h5>
 
-        <nav class="my-2 my-md-0 mr-md-3">
+        <nav class="my-2 my-md-0 mr-md-3" style="display: flex">
+
             <a class="p-2 text-dark" href="{% url "replay-upload" %}">Home</a>
             <a class="p-2 text-dark" href="{% url "about-page" %}">About</a>
-            <a class="p-2 text-dark" href="#">Replays</a>
+            <a class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle p-2 text-dark" id="replayDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Replays</a>
+                <div class="dropdown-menu" aria-labelledby="replayDropdown">
+                    <a class="dropdown-item" href="{% url "terran-table" %}">Terran</a>
+                    <a class="dropdown-item" href="{% url "zerg-table" %}">Zerg</a>
+                    <a class="dropdown-item" href="{% url "protoss-table" %}">Protoss</a>
+                </div>
+            </a>
+
         </nav>
         <a class="btn btn-outline-primary" href="mailto:kevinxu8099@gmail.com">Contact</a>
     </div>
