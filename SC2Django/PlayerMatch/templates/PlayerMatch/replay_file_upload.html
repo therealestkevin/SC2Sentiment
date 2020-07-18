@@ -13,7 +13,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
             crossorigin="anonymous"></script>
-    
+
     <!-- JS, Popper.js, and jQuery -->
 
 
@@ -62,29 +62,6 @@
 
         }
 
-        .hvr-grow {
-            display: inline-block;
-            vertical-align: middle;
-            transform: translateZ(0);
-            width: 32vw;
-            height: 18vw;
-            background-size: cover;
-            object-fit: scale-down;
-            -webkit-filter: none;
-            animation: glowGreen 0.5s alternate;
-            animation-iteration-count: 2;
-            backface-visibility: hidden;
-            transition: ease-in-out;
-            transition-duration: 0.3s;
-            transition-property: transform;
-        }
-
-        .hvr-grow:hover {
-            animation-play-state: paused;
-            filter: drop-shadow(0px 0px 15px blue);
-            transform: scale(1.1);
-
-        }
 
         /*-webkit-filter: drop-shadow(12px 12px -10px #aef4af);*/
         @keyframes glowGreen {
@@ -223,11 +200,16 @@
                 <div class="container">
                     <div class="row justify-content-center" style="align-items: center">
                         <div class="col-3">
-                            {% if terran < protoss and terran < zerg %}
+                            {% load static %}
+                            <img id="terranSalt" src="{% static "images/salt.gif" %}" alt="salt"
+                                 style="width:100%; visibility: hidden">
+
+                            <!--{% if terran < protoss and terran < zerg %}
                                 {% load static %}
                                 <img src="{% static "images/salt.gif" %}" alt="salt"
                                      style="width:100%">
-                            {% endif %}
+                            {% endif %}-->
+
                         </div>
                         <div class="col-6">
                             <h1 id="terranSent" class="display-4 font-weight-bold text-center">{{ terran }}</h1>
@@ -266,11 +248,16 @@
                 <div class="container">
                     <div class="row" style="align-items: center">
                         <div class="col-3">
-                            {% if zerg < terran and zerg < protoss %}
+                            {% load static %}
+                            <img id="zergSalt" src="{% static "images/salt.gif" %}" alt="salt"
+                                 style="width:100%; visibility: hidden">
+
+                            <!--{% if zerg < terran and zerg < protoss %}
                                 {% load static %}
                                 <img src="{% static "images/salt.gif" %}" alt="salt"
                                      style="width:100%">
-                            {% endif %}
+                            {% endif %}-->
+
                         </div>
                         <div class="col-6">
                             <h1 id="zergSent" class="display-4 font-weight-bold text-center">{{ zerg }}</h1>
@@ -307,11 +294,17 @@
                 <div class="container">
                     <div class="row" style="align-items: center">
                         <div class="col-3">
-                            {% if protoss < terran and protoss < zerg %}
+
+                            {% load static %}
+                            <img id="protossSalt" src="{% static "images/salt.gif" %}" alt="salt"
+                                 style="width:100%; visibility: hidden">
+
+                            <!--{% if protoss < terran and protoss < zerg %}
                                 {% load static %}
                                 <img src="{% static "images/salt.gif" %}" alt="salt"
                                      style="width:100%">
-                            {% endif %}
+                            {% endif %}-->
+
                         </div>
                         <div class="col-6">
                             <h1 id="protossSent" class="display-4 font-weight-bold text-center">{{ protoss }}</h1>
@@ -390,56 +383,6 @@
             messages</p>
     </div>
 
-    <!--<div id="upArrow">
-        <div class="inline-block">
-            {% load static %}
-            <img class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}" alt="upArrow">
-        </div>
-        <div class="inline-block">
-            {% load static %}
-            <img class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}" alt="upArrow">
-        </div>
-        <div class="inline-block">
-            {% load static %}
-            <img class="fadeUpArrow" src="{% static "images/upwardsArrow.png" %}" alt="upArrow">
-        </div>
-    </div>
-
-
-
-    <div id="banner">
-        <div class="inline-block">
-            {% load static %}
-            <img class=hvr-grow src="{% static "images/terran.png" %}" alt="Terran">
-        </div>
-
-        <div class="inline-block">
-            {% load static %}
-            <img class=hvr-grow src="{% static "images/zerg.png" %}" alt="Zerg">
-        </div>
-
-        <div class="inline-block">
-            {% load static %}
-            <img class=hvr-grow src="{% static "images/protoss.png" %}" alt="Protoss">
-        </div>
-    </div>
-
-    <div id="downArrow">
-        <div class="inline-block">
-            {% load static %}
-            <img class="fadeDownArrow" src="{% static "images/downwardsArrow.png" %}" alt="downArrow">
-        </div>
-        <div class="inline-block">
-            {% load static %}
-            <img class="fadeDownArrow" src="{% static "images/downwardsArrow.png" %}" alt="downArrow">
-        </div>
-        <div class="inline-block">
-            {% load static %}
-            <img class="fadeDownArrow" src="{% static "images/downwardsArrow.png" %}" alt="downArrow">
-        </div>
-    </div>
-    -->
-
 
     <div id="formHolder" class="jumbotron"
          style="display: flex;flex-direction: column;align-items: center;justify-content: center;">
@@ -452,12 +395,6 @@
             <input id="submitButton" type="submit" class="btn btn-outline-primary" value="Upload">
         </form>
 
-        <!--<div id="successAlert" class="alert alert-success" style="visibility: hidden">
-            <strong>Success!</strong> You uploaded your replays
-        </div>
-        <div id="dangerAlert" class="alert alert-danger" style="visibility:hidden;">
-            <strong>Danger!</strong> Your upload failed. Please check that you uploaded a proper replay
-        </div>-->
 
     </div>
 
@@ -489,7 +426,28 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () {
-            //setInterval(refreshSent, 3000);
+            var startTerran = {{ terran }};
+            var startZerg = {{ zerg }};
+            var startProtoss = {{ protoss }};
+
+            if (startTerran <= startZerg && startTerran <= startProtoss) {
+                document.getElementById("terranSalt").style.visibility = "visible";
+            }
+
+            if (startZerg <= startTerran && startZerg <= startProtoss) {
+                document.getElementById("zergSalt").style.visibility = "visible";
+            }
+
+            if (startProtoss <= startTerran && startProtoss <= startZerg) {
+                document.getElementById("protossSalt").style.visibility = "visible";
+            }
+
+
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            setInterval(refreshSent, 3000);
         });
 
         function refreshSent() {
@@ -514,7 +472,7 @@
                         terranUpArrow.style.animation = 'none';
                         terranUpArrow.offsetHeight;
                         terranUpArrow.style.animation = null;
-                    }else if(newTerran < curTerran) {
+                    } else if (newTerran < curTerran) {
                         terranIcon.className = 'hvr-grow-card-red';
                         terranIcon.style.animationPlayState = "running";
                         terranIcon.style.animation = 'none';
@@ -531,7 +489,7 @@
                     var newZerg = parseFloat(data['zerg']);
                     var zergIcon = document.getElementById('zergIcon');
 
-                    if(newZerg > curZerg){
+                    if (newZerg > curZerg) {
                         zergIcon.className = 'hvr-grow-card-green';
                         zergIcon.style.animationPlayState = "running";
                         zergIcon.style.animation = 'none';
@@ -543,7 +501,7 @@
                         zergUpArrow.style.animation = 'none';
                         zergUpArrow.offsetHeight;
                         zergUpArrow.style.animation = null;
-                    }else if(newZerg < curZerg){
+                    } else if (newZerg < curZerg) {
                         zergIcon.className = 'hvr-grow-card-red';
                         zergIcon.style.animationPlayState = "running";
                         zergIcon.style.animation = 'none';
@@ -560,7 +518,7 @@
                     var newProtoss = parseFloat(data['protoss']);
                     var protossIcon = document.getElementById('protossIcon');
 
-                    if(newProtoss > curProtoss){
+                    if (newProtoss > curProtoss) {
                         protossIcon.className = 'hvr-grow-card-green';
                         protossIcon.style.animationPlayState = "running";
                         protossIcon.style.animation = 'none';
@@ -572,7 +530,7 @@
                         protossUpArrow.style.animation = 'none';
                         protossUpArrow.offsetHeight;
                         protossUpArrow.style.animation = null;
-                    }else if(newProtoss < curProtoss){
+                    } else if (newProtoss < curProtoss) {
                         protossIcon.className = 'hvr-grow-card-red';
                         protossIcon.style.animationPlayState = "running";
                         protossIcon.style.animation = 'none';
@@ -585,8 +543,22 @@
                         protossDownArrow.offsetHeight;
                         protossDownArrow.style.animation = null;
                     }
+                    document.getElementById("terranSalt").style.visibility = "hidden";
+                    document.getElementById("zergSalt").style.visibility = "hidden";
+                    document.getElementById("protossSalt").style.visibility = "hidden";
 
-                    
+                    if (newTerran <= newZerg && newTerran <= newProtoss) {
+                        document.getElementById("terranSalt").style.visibility = "visible";
+                    }
+
+                    if (newZerg <= newTerran && newZerg <= newProtoss) {
+                        document.getElementById("zergSalt").style.visibility = "visible";
+                    }
+
+                    if (newProtoss <= newTerran && newProtoss <= newZerg) {
+                        document.getElementById("protossSalt").style.visibility = "visible";
+                    }
+
                     $('#terranSent').html(data['terran']);
                     $('#zergSent').html(data['zerg']);
                     $('#protossSent').html(data['protoss']);
@@ -594,6 +566,9 @@
             });
         }
     </script>
+
+
+
 
     <!--<script type="text/javascript">
         $('#uploadForm').submit(function (e) {
@@ -620,9 +595,4 @@
             return false
         });
     </script>-->
-
-
-
-
-
 {% endblock %}

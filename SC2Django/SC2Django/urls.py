@@ -25,6 +25,7 @@ urlpatterns = [
     path('', FileFieldView.as_view(), name='replay-upload'),
     path('sentiment/', sentiment_data, name='sentiment-data'),
     path('thanks/', TemplateView.as_view(template_name="PlayerMatch/thanks.html"), name='thanks-page'),
+    path('about/', TemplateView.as_view(template_name="about.html"), name='about-page'),
     #path('PlayerMatch/', include('PlayerMatch.urls')),
 ]
 

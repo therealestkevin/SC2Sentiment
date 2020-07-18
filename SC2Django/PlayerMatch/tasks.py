@@ -34,6 +34,16 @@ def enable_download_in_headless_chrome(driver, download_dir):
 
 
 def analyze_sentiments(archive_, protocol_):
+
+    contents = archive_.read_file('replay.initData')
+    lobbyDetails = protocol_.decode_replay_initdata(contents)
+
+    uniqueIdentifier = lobbyDetails['m_syncLobbyState']['m_gameDescription']['m_randomValue']
+
+    if PlayerMatchSingular.objects.filter(uniqueID=uniqueIdentifier).exists():
+        print("Already in Database")
+        return
+
     contents = archive_.read_file('replay.details')
 
     gameDetails = protocol_.decode_replay_details(contents)
@@ -98,23 +108,31 @@ def analyze_sentiments(archive_, protocol_):
     overallSentiments = OverallSentiment.objects.get(pk=1)
     for i in range(len(gameDetails['m_playerList'])):
         curPlayerName = strip_html(playerList[i]['m_name'].decode("utf-8"))
-        PlayerMatchSingular.objects.create(username=curPlayerName,
-                                           compoundSentiment=compoundUserSentiments[i], messages=listmessages[i],
-                                           messageSentiments=listMessageSentiments[i])
+        curRacePlayerMatch = ""
+
         curRace = str(playerList[i]['m_race'])
         if "Zerg" in curRace:
             overallSentiments.zergSentimentCount += 1
 
             overallSentiments.zergSentimentOverall += compoundUserSentiments[i]
+
+            curRacePlayerMatch = "Zerg"
         elif "Terran" in curRace:
             overallSentiments.terranSentimentCount += 1
 
             overallSentiments.terranSentimentOverall += compoundUserSentiments[i]
+
+            curRacePlayerMatch = "Terran"
         elif "Protoss" in curRace:
             overallSentiments.protossSentimentCount += 1
 
             overallSentiments.protossSentimentOverall += compoundUserSentiments[i]
 
+            curRacePlayerMatch = "Protoss"
+
+        PlayerMatchSingular.objects.create(username=curPlayerName, curRace=curRacePlayerMatch, uniqueID=uniqueIdentifier,
+                                       compoundSentiment=compoundUserSentiments[i], messages=listmessages[i],
+                                       messageSentiments=listMessageSentiments[i])
     overallSentiments.save()
 
 
@@ -257,8 +275,7 @@ def selenium_process_replay():
 
         if 'none' in nextButton:
             isLast = True
-        # contents = archive.read_file('replay.initData')
-        # lobbyDetails = protocol.decode_replay_initdata(contents)
+
 
         # curRace = curRace[2: len(curRace) - 1]
     archive = None

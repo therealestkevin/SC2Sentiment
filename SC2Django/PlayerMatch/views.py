@@ -13,10 +13,22 @@ from django.http import JsonResponse
 
 def sentiment_data(request):
     curSentiments = OverallSentiment.objects.get(pk=1)
+    terranSent = '{:.2f}'.format(0.00)
+    zergSent = '{:.2f}'.format(0.00)
+    protossSent = '{:.2f}'.format(0.00)
+    if curSentiments.terranSentimentCount != 0:
+        terranSent = '{:.2f}'.format(round((curSentiments.terranSentimentOverall / curSentiments.terranSentimentCount) * 100, 2))
+
+    if curSentiments.zergSentimentCount != 0:
+        zergSent = '{:.2f}'.format(round((curSentiments.zergSentimentOverall / curSentiments.zergSentimentCount) * 100, 2))
+
+    if curSentiments.protossSentimentCount != 0:
+        protossSent = '{:.2f}'.format(round((curSentiments.protossSentimentOverall / curSentiments.protossSentimentCount) * 100, 2))
+
     return JsonResponse({
-        'terran': '{:.2f}'.format(round((curSentiments.terranSentimentOverall / curSentiments.terranSentimentCount) * 100, 2)),
-        'zerg': '{:.2f}'.format(round((curSentiments.zergSentimentOverall / curSentiments.zergSentimentCount) * 100, 2)),
-        'protoss': '{:.2f}'.format(round((curSentiments.protossSentimentOverall / curSentiments.protossSentimentCount) * 100, 2))
+        'terran': terranSent,
+        'zerg': zergSent,
+        'protoss': protossSent
     })
 
 
@@ -44,11 +56,27 @@ class FileFieldView(FormView):
 
         context['curMessages'] = negativeMessages
 
-        context['terran'] = '{:.2f}'.format(round((curSentiments.terranSentimentOverall / curSentiments.terranSentimentCount) * 100, 2))
+        terranSent = '{:.2f}'.format(0.00)
+        zergSent = '{:.2f}'.format(0.00)
+        protossSent = '{:.2f}'.format(0.00)
 
-        context['zerg'] = '{:.2f}'.format(round((curSentiments.zergSentimentOverall / curSentiments.zergSentimentCount) * 100, 2))
+        if curSentiments.terranSentimentCount != 0:
+            terranSent = '{:.2f}'.format(
+                round((curSentiments.terranSentimentOverall / curSentiments.terranSentimentCount) * 100, 2))
 
-        context['protoss'] = '{:.2f}'.format(round((curSentiments.protossSentimentOverall / curSentiments.protossSentimentCount) * 100, 2))
+        if curSentiments.zergSentimentCount != 0:
+            zergSent = '{:.2f}'.format(
+                round((curSentiments.zergSentimentOverall / curSentiments.zergSentimentCount) * 100, 2))
+
+        if curSentiments.protossSentimentCount != 0:
+            protossSent = '{:.2f}'.format(
+                round((curSentiments.protossSentimentOverall / curSentiments.protossSentimentCount) * 100, 2))
+
+        context['terran'] = terranSent
+
+        context['zerg'] = zergSent
+
+        context['protoss'] = protossSent
 
         return context
 
@@ -66,7 +94,9 @@ class FileFieldView(FormView):
                 # Verify Correct Files
                 if f.name.endswith('.SC2Replay'):
                     print(f.name)
-                    process_uploaded_replay.delay(f.file)
+                    process_uploaded_replay(f.file)
+                    #Use Async in Production
+                    #process_uploaded_replay.delay(f.file)
                 else:
                     return self.form_invalid(form)
             return self.form_valid(form)

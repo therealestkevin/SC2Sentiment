@@ -5,6 +5,8 @@ from django.contrib.postgres.fields import ArrayField
 # Create your models here.
 class PlayerMatchSingular(models.Model):
     username = models.CharField(max_length=100, blank=True)
+    curRace = models.CharField(max_length=20, blank=True)
+    uniqueID = models.BigIntegerField()
     compoundSentiment = models.FloatField()
     messages = ArrayField(
         models.TextField(), blank=True
