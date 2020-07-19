@@ -147,7 +147,7 @@ CELERY_TIMEZONE = 'America/Los_Angeles'
 CELERY_BEAT_SCHEDULE = {
     'process-selenium-biweekly': {
         'task': 'PlayerMatch.tasks.selenium_process_replay',
-        'schedule': crontab(hour=18, day_of_week='sat,wed')
+        'schedule': crontab(minute=45, hour=15, day_of_week='sat,wed')
     }
 }
 
