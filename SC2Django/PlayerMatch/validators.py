@@ -7,3 +7,4 @@ def validate_file_extension(value):
     valid_extensions = ['.SC2Replay']
     if not ext in valid_extensions:
         raise ValidationError('Unsupported File Extension. Please Upload a Replay Ending In .SC2Replay')
+

@@ -111,8 +111,12 @@ options.add_experimental_option("prefs", {
 })
 
 curAllMaps = open('ValidMapRotationCopy.txt').readlines()
+remaining = len(curAllMaps)
+if remaining < 1:
+    print("stop")
+
 curMap = curAllMaps[0]
-# open('ValidMapRotationCopy.txt', 'w').writelines(curAllMaps[1:])
+open('ValidMapRotationCopy.txt', 'w').writelines(curAllMaps[1:])
 
 
 curMapLink = ""
@@ -123,12 +127,13 @@ enable_download_in_headless_chrome(browser, getcwd() + '\\TempReplays')
 curMapName = curMap
 curMapName = curMapName.replace(" ", "%20")
 
-curMapLink = "https://gggreplays.com/matches#?map_name=" + curMapName + "&page="
+curMapLink = "https://gggreplays.com/matches#?map_name=" + curMapName + "&race=terran&vs_race=terran" + "&page="
 isLast = False
 isLastPage = False
 curPage = 1
 browser.get(curMapLink + str(curPage))
 sleep(1)
+
 while not isLastPage:
 
     fileNameList = []
@@ -181,11 +186,11 @@ while not isLastPage:
                 if file_name:
                     fileNameList.append(file_name)
 
-                # browser.get(curMapLink+str(j))
+
 
 
     print(fileNameList)
-
+    '''
     for fileName in fileNameList:
         archive = mpyq.MPQArchive(getcwd() + '\\TempReplays\\' + fileName)
         print(archive.files)
@@ -198,7 +203,7 @@ while not isLastPage:
             analyze_sentiments(archive, protocol, races)
         except ImportError as err:
             print(err.args)
-
+    '''
     if isLast:
         isLastPage = True
 
@@ -217,8 +222,9 @@ while not isLastPage:
     # curRace = curRace[2: len(curRace) - 1]
 archive = None
 browser.close()
-new_name = str(uuid4())
-rename(getcwd() + '\\TempReplays', new_name)
-rmtree(getcwd() + '\\' + new_name)
-mkdir(getcwd() + '\\TempReplays')
+
+#new_name = str(uuid4())
+#rename(getcwd() + '\\TempReplays', new_name)
+#rmtree(getcwd() + '\\' + new_name)
+#mkdir(getcwd() + '\\TempReplays')
 print(races)

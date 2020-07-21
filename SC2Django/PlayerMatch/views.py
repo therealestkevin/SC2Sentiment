@@ -25,14 +25,26 @@ def sentiment_data(request):
     if curSentiments.protossSentimentCount != 0:
         protossSent = '{:.2f}'.format(round((curSentiments.protossSentimentOverall / curSentiments.protossSentimentCount) * 100, 2))
 
+    allPlayers = PlayerMatchSingular.objects.all()
+
+    allPlayerCount = len(allPlayers)
+    terranCount = len(PlayerMatchSingular.objects.filter(curRace='Terran'))
+    zergCount = len(PlayerMatchSingular.objects.filter(curRace='Zerg'))
+    protossCount = len(PlayerMatchSingular.objects.filter(curRace='Protoss'))
+
     return JsonResponse({
         'terran': terranSent,
         'zerg': zergSent,
-        'protoss': protossSent
+        'protoss': protossSent,
+        'allCountUpdate': allPlayerCount,
+        'terranCountUpdate': terranCount,
+        'zergCountUpdate': zergCount,
+        'protossCountUpdate': protossCount,
     })
 
 
 class FileFieldView(FormView):
+
     form_class = FileFieldForm
     template_name = 'PlayerMatch/replay_file_upload.html'
 
@@ -44,6 +56,11 @@ class FileFieldView(FormView):
         context = super(FileFieldView, self).get_context_data(**kwargs)
         curSentiments = OverallSentiment.objects.get(pk=1)
         allPlayers = PlayerMatchSingular.objects.order_by('pk').reverse()
+
+        allPlayerCount = len(allPlayers)
+        terranCount = len(PlayerMatchSingular.objects.filter(curRace='Terran'))
+        zergCount = len(PlayerMatchSingular.objects.filter(curRace='Zerg'))
+        protossCount = len(PlayerMatchSingular.objects.filter(curRace='Protoss'))
 
         negativeMessages = []
         positiveMessages = []
@@ -66,6 +83,14 @@ class FileFieldView(FormView):
         context['curMessages'] = negativeMessages
 
         context['curMessagesPositive'] = positiveMessages
+
+        context['allCount'] = allPlayerCount
+
+        context['terranCount'] = terranCount
+
+        context['zergCount'] = zergCount
+
+        context['protossCount'] = protossCount
 
         terranSent = '{:.2f}'.format(0.00)
         zergSent = '{:.2f}'.format(0.00)
@@ -92,8 +117,8 @@ class FileFieldView(FormView):
         return context
 
     def post(self, request, *args, **kwargs):
-        if request.POST.get('process_btn'):
-            selenium_process_replay()
+        #if request.POST.get('process_btn'):
+         #   selenium_process_replay()
 
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -101,15 +126,26 @@ class FileFieldView(FormView):
         files = request.FILES.getlist('replay_file')
 
         if form.is_valid():
+            allFiles = []
             for f in files:
                 # Verify Correct Files
                 if f.name.endswith('.SC2Replay'):
                     print(f.name)
+                    allFiles.append(f.file)
                     #process_uploaded_replay(f.file)
                     #Use Async in Production
-                    process_uploaded_replay.delay(f.file)
                 else:
                     return self.form_invalid(form)
+            if len(allFiles) > 25:
+                curContext = self.get_context_data()
+                curContext['validForm'] = True
+                curContext['ErrorMessage'] = "Too many files. Please upload a max of 25 files."
+
+                return render(request, "PlayerMatch/replay_file_upload.html", curContext)
+
+            process_uploaded_replay.delay(allFiles)
+
+
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -120,7 +156,7 @@ class TerranTableView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        lastHundred = list(PlayerMatchSingular.objects.filter(curRace="Terran").order_by('-id')[:100])
+        lastHundred = list(PlayerMatchSingular.objects.filter(curRace="Terran").order_by('-id')[:500])
         context["last_hundred"] = lastHundred
 
         return context
@@ -131,7 +167,7 @@ class ZergTableView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        lastHundred = list(PlayerMatchSingular.objects.filter(curRace="Zerg").order_by('-id')[:100])
+        lastHundred = list(PlayerMatchSingular.objects.filter(curRace="Zerg").order_by('-id')[:500])
         context["last_hundred"] = lastHundred
 
         return context
@@ -142,7 +178,7 @@ class ProtossTableView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        lastHundred = list(PlayerMatchSingular.objects.filter(curRace="Protoss").order_by('-id')[:100])
+        lastHundred = list(PlayerMatchSingular.objects.filter(curRace="Protoss").order_by('-id')[:500])
         context["last_hundred"] = lastHundred
 
         return context

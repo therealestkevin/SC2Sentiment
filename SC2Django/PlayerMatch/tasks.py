@@ -145,20 +145,20 @@ def strip_html(s):
 
 
 @shared_task()
-def process_uploaded_replay(replayFile):
+def process_uploaded_replay(replayFiles):
     print("Task Running...")
 
-    archive = mpyq.MPQArchive(replayFile)
+    for file in replayFiles:
+        archive = mpyq.MPQArchive(file)
 
-    contents = archive.header['user_data_header']['content']
-    header = versions.latest().decode_replay_header(contents)
-    baseBuild = header['m_version']['m_baseBuild']
-
-    try:
-        protocol = versions.build(baseBuild)
-        analyze_sentiments(archive, protocol)
-    except ImportError as err:
-        print(err.args)
+        contents = archive.header['user_data_header']['content']
+        header = versions.latest().decode_replay_header(contents)
+        baseBuild = header['m_version']['m_baseBuild']
+        try:
+            protocol = versions.build(baseBuild)
+            analyze_sentiments(archive, protocol)
+        except ImportError as err:
+            print(err.args)
 
 
 @shared_task()
@@ -178,8 +178,11 @@ def selenium_process_replay():
     })
 
     curAllMaps = open(getcwd() + '\\PlayerMatch\\ValidMapRotationBackup.txt').readlines()
+    remaining = len(curAllMaps)
+    if remaining < 1:
+        return
     curMap = curAllMaps[0]
-    # open('ValidMapRotationCopy.txt', 'w').writelines(curAllMaps[1:])
+    open('ValidMapRotationBackup.txt', 'w').writelines(curAllMaps[1:])
 
     curMapLink = ""
     browser = webdriver.Chrome(getcwd() + '\\PlayerMatch\\chromedriver.exe', options=options)
@@ -215,7 +218,7 @@ def selenium_process_replay():
 
             if "A.I." not in PlayerText and PlayerText:
 
-                if "year" in DateText or "11 months" in DateText or "10 months" in DateText:
+                if "year" in DateText or "11 months" in DateText:
                     print(PlayerText)
                     matchLink = browser.find_element_by_xpath(
                         '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[2]/a'

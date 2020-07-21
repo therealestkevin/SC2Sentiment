@@ -175,7 +175,11 @@
 
 
     </style>
-
+    {% if validForm %}
+        <div class="alert alert-danger text-center">
+            <strong>{{ ErrorMessage }}</strong>
+        </div>
+    {% endif %}
 
 
     <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
@@ -194,8 +198,8 @@
             <div class="card-body">
                 <a href="{% url "terran-table" %}">
                     {% load static %}
-                <img id="terranIcon" class="hvr-grow-card-green" src="{% static "images/terran.png" %}" alt="Terran"
-                     style="animation-play-state: paused">
+                    <img id="terranIcon" class="hvr-grow-card-green" src="{% static "images/terran.png" %}" alt="Terran"
+                         style="animation-play-state: paused">
                 </a>
 
             </div>
@@ -244,9 +248,9 @@
             </div>
             <div class="card-body">
                 <a href="{% url "zerg-table" %}">
-                {% load static %}
-                <img id="zergIcon" class="hvr-grow-card-green" src="{% static "images/zerg.png" %}" alt="Zerg"
-                     style="animation-play-state: paused">
+                    {% load static %}
+                    <img id="zergIcon" class="hvr-grow-card-green" src="{% static "images/zerg.png" %}" alt="Zerg"
+                         style="animation-play-state: paused">
                 </a>
             </div>
             <div class="card-footer">
@@ -292,9 +296,10 @@
             </div>
             <div class="card-body">
                 <a href="{% url "protoss-table" %}">
-                {% load static %}
-                <img id="protossIcon" class="hvr-grow-card-green" src="{% static "images/protoss.png" %}" alt="Protoss"
-                     style="animation-play-state: paused">
+                    {% load static %}
+                    <img id="protossIcon" class="hvr-grow-card-green" src="{% static "images/protoss.png" %}"
+                         alt="Protoss"
+                         style="animation-play-state: paused">
                 </a>
             </div>
             <div class="card-footer">
@@ -344,7 +349,28 @@
     </div>
 
     <div class="bg-white border-bottom shadow-sm " style=" box-shadow: 0 4px 2px -2px gray;">
-        <h3 class="my-0 mr-md-auto font-weight-bold">&nbsp;&nbsp;&nbsp;&nbsp;Recent Negative Messages</h3>
+        <h3 class="my-0 mr-md-auto font-weight-bold">&nbsp;&nbsp;&nbsp;&nbsp;Quick Facts</h3>
+    </div>
+    <div class="row" style="">
+        <div class="col-3">
+            <h1 id="allPlayers" class="display-3 font-weight-bold text-center">{{ allCount }}</h1>
+            <h5 class="text-center">Players Analyzed</h5>
+        </div>
+        <div class="col-3">
+            <h1 id="allTerranPlayers" class="display-4 font-weight-bold text-center" style="color: #1456a7">{{ terranCount }}</h1>
+            <h5 class="text-center">Terran Analyzed</h5>
+        </div>
+        <div class="col-3">
+            <h1 id="allZergPlayers" class="display-4 font-weight-bold text-center" style="color: #79298c">{{ zergCount }}</h1>
+            <h5 class="text-center">Zerg Analyzed</h5>
+        </div>
+        <div class="col-3">
+            <h1 id="allProtossPlayers" class="display-4 font-weight-bold text-center" style="color: #ffe14c">{{ protossCount }}</h1>
+            <h5 class="text-center">Protoss Analyzed</h5>
+        </div>
+    </div>
+    <div class="bg-white border-bottom shadow-sm " style=" box-shadow: 0 4px 2px -2px gray;">
+        <h3 class="my-0 mr-md-auto font-weight-bold" style="padding-top: 1.5vw">&nbsp;&nbsp;&nbsp;&nbsp;Recent Negative Messages</h3>
     </div>
 
     <div style="padding: 0.5vw"></div>
@@ -428,7 +454,7 @@
     <div class="bg-white border-bottom shadow-sm " style=" box-shadow: 0 4px 2px -2px gray;">
         <h3 class="my-0 mr-md-auto font-weight-bold">&nbsp;&nbsp;&nbsp;&nbsp;How You Can Help</h3>
         <p class="lead">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Upload your own Starcraft replays to expand our database of
-            messages</p>
+            messages (Max File Count: 25)</p>
     </div>
 
 
@@ -446,12 +472,12 @@
 
     </div>
 
-    <div class="ButtonDiv" style="padding-top: 1vw">
+    <!--<div class="ButtonDiv" style="padding-top: 1vw">
         &nbsp;&nbsp;
         <form id="clickTest" method="post" action=".">{% csrf_token %}
             <input type="submit" class="btn btn-outline-primary" value="Click" name="process_btn">
         </form>
-    </div>
+    </div>-->
 
 
     <!--
@@ -613,7 +639,10 @@
                     if (newProtoss <= newTerran && newProtoss <= newZerg) {
                         document.getElementById("protossSalt").style.visibility = "visible";
                     }
-
+                    $('#allPlayers').html(data['allCountUpdate'])
+                    $('#allTerranPlayers').html(data['terranCountUpdate'])
+                    $('#allZergPlayers').html(data['zergCountUpdate'])
+                    $('#allProtossPlayers').html(data['protossCountUpdate'])
                     $('#terranSent').html(data['terran']);
                     $('#zergSent').html(data['zerg']);
                     $('#protossSent').html(data['protoss']);
@@ -621,6 +650,7 @@
             });
         }
     </script>
+
 
 
 
