@@ -55,12 +55,14 @@ class FileFieldView(FormView):
 
         context = super(FileFieldView, self).get_context_data(**kwargs)
         curSentiments = OverallSentiment.objects.get(pk=1)
-        allPlayers = PlayerMatchSingular.objects.order_by('pk').reverse()
+        allPlayers = PlayerMatchSingular.objects.order_by('-id')[:5000]
 
-        allPlayerCount = len(allPlayers)
-        terranCount = len(PlayerMatchSingular.objects.filter(curRace='Terran'))
-        zergCount = len(PlayerMatchSingular.objects.filter(curRace='Zerg'))
-        protossCount = len(PlayerMatchSingular.objects.filter(curRace='Protoss'))
+
+        terranCount = curSentiments.terranSentimentCount
+        zergCount = curSentiments.zergSentimentCount
+        protossCount = curSentiments.protossSentimentCount
+
+        allPlayerCount = terranCount + zergCount + protossCount
 
         negativeMessages = []
         positiveMessages = []

@@ -3,12 +3,12 @@
     "model": "PlayerMatch.overallsentiment",
     "pk": 1,
     "fields": {
-        "terranSentimentCount": 10940,
-        "terranSentimentOverall": 1164.2467106881866,
-        "zergSentimentCount": 10904,
-        "zergSentimentOverall": 1218.627671604096,
-        "protossSentimentCount": 8428,
-        "protossSentimentOverall": 800.6281043760886
+        "terranSentimentCount": 24559,
+        "terranSentimentOverall": 2701.3494631862036,
+        "zergSentimentCount": 24342,
+        "zergSentimentOverall": 2830.358419838948,
+        "protossSentimentCount": 18230,
+        "protossSentimentOverall": 1822.0925704454983
     }
 }
 ]

@@ -182,7 +182,7 @@ def selenium_process_replay():
     if remaining < 1:
         return
     curMap = curAllMaps[0]
-    open('ValidMapRotationBackup.txt', 'w').writelines(curAllMaps[1:])
+    open(getcwd() + '\\PlayerMatch\\ValidMapRotationBackup.txt', 'w').writelines(curAllMaps[1:])
 
     curMapLink = ""
     browser = webdriver.Chrome(getcwd() + '\\PlayerMatch\\chromedriver.exe', options=options)

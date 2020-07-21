@@ -12,7 +12,7 @@ emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "�
                      "B-}": "😎", "(cool)": "😎", ":S": "😨", "(scared)": "😨",
                      "|-]": "😴", "(sleepy)": "😴", "(kiss)": "😘", "(devil)": "😈"
                      }
-archive = mpyq.MPQArchive("H:/Downloads/ggtracker_141193.SC2Replay")
+archive = mpyq.MPQArchive("H:/Downloads/ggtracker_307057.SC2Replay")
 
 contents = archive.header['user_data_header']['content']
 header = versions.latest().decode_replay_header(contents)
