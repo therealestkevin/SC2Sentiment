@@ -12,7 +12,7 @@ The Terran, Zerg, and Protoss factions vary drastically in their play styles. As
 
 - Sentiment analysis in the context of the informal in-game chat is done through VADER Sentiment analysis, which is tuned for social media sentiments. 
 
-- Tens of thousands of replays have been sourced from the Starcraft replay repository www.gggreplays.com using a Selenium Webcrawler to build up a proper representation of the Starcraft playerbase. 
+- Tens of thousands of replays have been sourced from the Starcraft replay repository https://gggreplays.com/landing_tour using a Selenium Webcrawler to build up a proper representation of the Starcraft playerbase. 
 
 - The website itself also acts as a crowdsourcing point for visitors to upload their own replays to be analyzed and incorporated into the database of sentiment analyzed replays. 
 
