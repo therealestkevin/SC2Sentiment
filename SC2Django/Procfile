@@ -1,2 +1,2 @@
 web: gunicorn SC2Django.wsgi --log-file -
-worker: celery -A SC2Django worker -l info -P gevent -B
+worker: celery -A SC2Django worker -l info -P gevent

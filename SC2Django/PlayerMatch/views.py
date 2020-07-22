@@ -25,12 +25,11 @@ def sentiment_data(request):
     if curSentiments.protossSentimentCount != 0:
         protossSent = '{:.2f}'.format(round((curSentiments.protossSentimentOverall / curSentiments.protossSentimentCount) * 100, 2))
 
-    allPlayers = PlayerMatchSingular.objects.all()
+    terranCount = curSentiments.terranSentimentCount
+    zergCount = curSentiments.zergSentimentCount
+    protossCount = curSentiments.protossSentimentCount
 
-    allPlayerCount = len(allPlayers)
-    terranCount = len(PlayerMatchSingular.objects.filter(curRace='Terran'))
-    zergCount = len(PlayerMatchSingular.objects.filter(curRace='Zerg'))
-    protossCount = len(PlayerMatchSingular.objects.filter(curRace='Protoss'))
+    allPlayerCount = terranCount + zergCount + protossCount
 
     return JsonResponse({
         'terran': terranSent,

@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-from .secrets import AllSecrets
 from celery.schedules import crontab
 import django_heroku
-
+import dj_database_url
+import psycopg2
 # django_heroku.settings(locals())
 
 
@@ -25,12 +25,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = AllSecrets.get_secret()
+SECRET_KEY = os.environ['SECRET_KEY']
+#AllSecrets.get_secret()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['www.sc2sentiment.me', 'sc2sentiment.me','sc2-sentiment.herokuapp.com', '127.0.0.1']
 
 # Application definition
 
@@ -86,16 +87,7 @@ WSGI_APPLICATION = 'SC2Django.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'DjangoStarcraft',
-        'USER': 'postgres',
-        'PASSWORD': AllSecrets.get_postgres_pass(),
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -131,9 +123,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
@@ -141,9 +135,17 @@ STATICFILES_DIRS = [
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+CACHES = {
+    "default": {
+         "BACKEND": "redis_cache.RedisCache",
+         "LOCATION": os.environ.get('REDIS_URL'),
+    }
+}
+
 # CELERY STUFF
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+CELERY_BROKER_URL = os.environ['REDIS_URL']
+CELERY_RESULT_BACKEND = os.environ['REDIS_URL']
 CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_TASK_SERIALIZER = 'pickle'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -152,6 +154,31 @@ CELERY_TIMEZONE = 'America/Los_Angeles'
 CELERY_BEAT_SCHEDULE = {
     'process-selenium-biweekly': {
         'task': 'PlayerMatch.tasks.selenium_process_replay',
-        'schedule': crontab(minute=15, hour='15', day_of_week='sat,wed')
+        'schedule': crontab(minute=45, hour='19', day_of_week='sat,wed,tue')
     }
 }
+
+DATABASE_URL = os.environ['DATABASE_URL']
+
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
+
+
+DATABASES = {
+    'default':{
+
+    }
+}
+# Heroku: Update database configuration from $DATABASE_URL.
+db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
+DATABASES['default'].update(db_from_env)
+
+
+#'default': {
+    #    'ENGINE': 'django.db.backends.postgresql',
+    #    'NAME': 'DjangoStarcraft',
+    #    'USER': 'postgres',
+    #    'PASSWORD': AllSecrets.get_postgres_pass(),
+    #    'HOST': 'localhost',
+    #    'PORT': '5432',
+    #}

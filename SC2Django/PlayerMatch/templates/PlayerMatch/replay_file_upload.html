@@ -18,6 +18,34 @@
 
 
     <style>
+        html {
+            font-size: 1rem;
+        }
+
+        @media (min-width: 576px) {
+            html {
+                font-size: 0.40rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            html {
+                font-size: 0.60rem;
+            }
+        }
+
+        @media (min-width: 992px) {
+            html {
+                font-size: 0.80rem;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            html {
+                font-size: 1rem;
+            }
+        }
+
         .ButtonDiv {
             text-align: center;
         }
@@ -357,20 +385,24 @@
             <h5 class="text-center">Players Analyzed</h5>
         </div>
         <div class="col-3">
-            <h1 id="allTerranPlayers" class="display-4 font-weight-bold text-center" style="color: #1456a7">{{ terranCount }}</h1>
+            <h1 id="allTerranPlayers" class="display-4 font-weight-bold text-center"
+                style="color: #1456a7">{{ terranCount }}</h1>
             <h5 class="text-center">Terran Analyzed</h5>
         </div>
         <div class="col-3">
-            <h1 id="allZergPlayers" class="display-4 font-weight-bold text-center" style="color: #79298c">{{ zergCount }}</h1>
+            <h1 id="allZergPlayers" class="display-4 font-weight-bold text-center"
+                style="color: #79298c">{{ zergCount }}</h1>
             <h5 class="text-center">Zerg Analyzed</h5>
         </div>
         <div class="col-3">
-            <h1 id="allProtossPlayers" class="display-4 font-weight-bold text-center" style="color: #ffe14c">{{ protossCount }}</h1>
+            <h1 id="allProtossPlayers" class="display-4 font-weight-bold text-center"
+                style="color: #ffe14c">{{ protossCount }}</h1>
             <h5 class="text-center">Protoss Analyzed</h5>
         </div>
     </div>
     <div class="bg-white border-bottom shadow-sm " style=" box-shadow: 0 4px 2px -2px gray;">
-        <h3 class="my-0 mr-md-auto font-weight-bold" style="padding-top: 1.5vw">&nbsp;&nbsp;&nbsp;&nbsp;Recent Negative Messages</h3>
+        <h3 class="my-0 mr-md-auto font-weight-bold" style="padding-top: 1.5vw">&nbsp;&nbsp;&nbsp;&nbsp;Recent Negative
+            Messages</h3>
     </div>
 
     <div style="padding: 0.5vw"></div>
