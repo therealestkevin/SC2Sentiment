@@ -1,5 +1,5 @@
 # SC2Sentiment
-### **www.sc2sentiment.me**
+### **<a href = "https://www.sc2sentiment.me/">sc2sentiment.me</a>**
 
 ## Overview
 
