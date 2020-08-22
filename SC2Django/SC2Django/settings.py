@@ -31,6 +31,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+SECURE_SSL_REDIRECT = True
+
 ALLOWED_HOSTS = ['www.sc2sentiment.me', 'sc2sentiment.me','sc2-sentiment.herokuapp.com', '127.0.0.1']
 
 # Application definition
