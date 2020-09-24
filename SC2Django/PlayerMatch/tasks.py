@@ -137,6 +137,9 @@ def analyze_sentiments(archive_, protocol_):
             PlayerMatchSingular.objects.create(username=curPlayerName, curRace=curRacePlayerMatch, uniqueID=uniqueIdentifier,
                                        compoundSentiment=compoundUserSentiments[i], messages=listmessages[i],
                                        messageSentiments=listMessageSentiments[i])
+            firstPlayer = PlayerMatchSingular.objects.order_by('-id')[0]
+            firstPlayer.delete()
+                                       
     overallSentiments.save()
 
 
