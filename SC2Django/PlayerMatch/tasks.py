@@ -1,9 +1,12 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from selenium.common.exceptions import TimeoutException
+
 from .models import PlayerMatchSingular, OverallSentiment
 from s2protocol import versions
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import mpyq
+import os
 from lxml import html
 from shutil import rmtree
 from uuid import uuid4
@@ -30,12 +33,13 @@ emojiTranslations = {"(happy)": "😁", ":D": "😂", "(rofl)": "😂", ":(": "�
 def enable_download_in_headless_chrome(driver, download_dir):
     # add missing support for chrome "send_command"  to selenium webdriver
     driver.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
+
     params = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': download_dir}}
+
     command_result = driver.execute("send_command", params)
 
 
 def analyze_sentiments(archive_, protocol_):
-
     contents = archive_.read_file('replay.initData')
     lobbyDetails = protocol_.decode_replay_initdata(contents)
 
@@ -134,12 +138,13 @@ def analyze_sentiments(archive_, protocol_):
             greenLight = False
 
         if greenLight:
-            PlayerMatchSingular.objects.create(username=curPlayerName, curRace=curRacePlayerMatch, uniqueID=uniqueIdentifier,
-                                       compoundSentiment=compoundUserSentiments[i], messages=listmessages[i],
-                                       messageSentiments=listMessageSentiments[i])
-            firstPlayer = PlayerMatchSingular.objects.order_by('-id')[0]
+            PlayerMatchSingular.objects.create(username=curPlayerName, curRace=curRacePlayerMatch,
+                                               uniqueID=uniqueIdentifier,
+                                               compoundSentiment=compoundUserSentiments[i], messages=listmessages[i],
+                                               messageSentiments=listMessageSentiments[i])
+            firstPlayer = PlayerMatchSingular.objects.order_by('id')[0]
             firstPlayer.delete()
-                                       
+
     overallSentiments.save()
 
 
@@ -171,6 +176,9 @@ def selenium_process_replay():
     options = Options()
 
     options.add_argument("--headless")
+    options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
+    options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
 
     options.add_experimental_option("prefs", {
         "download.default_directory": getcwd() + '\\TempReplays',
@@ -180,17 +188,19 @@ def selenium_process_replay():
         "safebrowsing.enabled": False
     })
 
-    curAllMaps = open(getcwd() + '\\PlayerMatch\\ValidMapRotationBackup.txt').readlines()
+    curAllMaps = open(getcwd() + '/PlayerMatch/ValidMapRotationBackup.txt').readlines()
     remaining = len(curAllMaps)
     if remaining < 1:
         return
+
     curMap = curAllMaps[0]
-    open(getcwd() + '\\PlayerMatch\\ValidMapRotationBackup.txt', 'w').writelines(curAllMaps[1:])
+    open(getcwd() + '/PlayerMatch/ValidMapRotationBackup.txt', 'w').writelines(curAllMaps[1:])
 
     curMapLink = ""
-    browser = webdriver.Chrome(getcwd() + '\\PlayerMatch\\chromedriver.exe', options=options)
+    # browser = webdriver.Chrome(getcwd() + '/PlayerMatch/chromedriver', options=options)
+    browser = webdriver.Chrome(executable_path=str(os.environ.get('CHROMEDRIVER_PATH')), options=options)
 
-    enable_download_in_headless_chrome(browser, getcwd() + '\\PlayerMatch\\TempReplays')
+    enable_download_in_headless_chrome(browser, getcwd() + '/PlayerMatch/TempReplays')
 
     curMapName = curMap
     curMapName = curMapName.replace(" ", "%20")
@@ -209,13 +219,18 @@ def selenium_process_replay():
         TotalRowNum = len(AllRows)
 
         for i in range(2, TotalRowNum + 1):
-            #Add this below if there is loading error on the table elements
+            # Add this below if there is loading error on the table elements
 
-            DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH,
-                        '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i))))
+            try:
+                DateElement = WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.XPATH,
+                                                                                                '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(
+                                                                                                    i))))
+            except TimeoutException as err:
+                continue
+
             DateText = DateElement.text
-                #browser.find_element_by_xpath(
-                #'//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
+            # browser.find_element_by_xpath(
+            # '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[20]'.format(i)).text
             PlayerText = browser.find_element_by_xpath(
                 '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[6]'.format(i)).text
 
@@ -229,18 +244,18 @@ def selenium_process_replay():
                     print(matchLink)
 
                     # browser.find_element_by_xpath('//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]'.format(i)).click()
-                    before = listdir(getcwd() + '\\PlayerMatch\\TempReplays')
+                    before = listdir(getcwd() + '/PlayerMatch/TempReplays')
 
                     downURL = matchLink + "/replay"
                     browser.get(downURL)
                     # sleep(2)
-                    after = listdir(getcwd() + '\\PlayerMatch\\TempReplays')
+                    after = listdir(getcwd() + '/PlayerMatch/TempReplays')
                     change = set(after) - set(before)
                     file_name = ""
                     loopCount = 0
                     while loopCount < 16 and len(change) == 0:
                         sleep(0.25)
-                        after = listdir(getcwd() + '\\PlayerMatch\\TempReplays')
+                        after = listdir(getcwd() + '/PlayerMatch/TempReplays')
                         change = set(after) - set(before)
                         if len(change) > 0:
                             file_name = change.pop()
@@ -251,7 +266,7 @@ def selenium_process_replay():
                     if loopCount == 16:
                         browser.get(curMapLink + str(curPage))
                         continue
-                        #and 'crdownload'
+                        # and 'crdownload'
 
                     if file_name and 'crdownload' not in file_name:
                         fileNameList.append(file_name)
@@ -261,7 +276,7 @@ def selenium_process_replay():
         print(fileNameList)
 
         for fileName in fileNameList:
-            archive = mpyq.MPQArchive(getcwd() + '\\PlayerMatch\\TempReplays\\' + fileName)
+            archive = mpyq.MPQArchive(getcwd() + '/PlayerMatch/TempReplays/' + fileName)
             print(archive.files)
             contents = archive.header['user_data_header']['content']
             header = versions.latest().decode_replay_header(contents)
@@ -286,13 +301,12 @@ def selenium_process_replay():
         if 'none' in nextButton:
             isLast = True
 
-
         # curRace = curRace[2: len(curRace) - 1]
     archive = None
     browser.close()
     new_name = str(uuid4())
-    rename(getcwd() + '\\PlayerMatch\\TempReplays\\', getcwd() + '\\PlayerMatch\\' + new_name)
-    rmtree(getcwd() + '\\PlayerMatch\\' + new_name)
-    mkdir(getcwd() + '\\PlayerMatch\\TempReplays')
+    rename(getcwd() + '/PlayerMatch/TempReplays/', getcwd() + '/PlayerMatch/' + new_name)
+    rmtree(getcwd() + '/PlayerMatch/' + new_name)
+    mkdir(getcwd() + '/PlayerMatch/TempReplays')
 
 
