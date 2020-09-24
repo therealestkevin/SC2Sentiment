@@ -221,7 +221,7 @@ def selenium_process_replay():
 
             if "A.I." not in PlayerText and PlayerText:
 
-                if "year" in DateText or "11 months" in DateText:
+                if "year" in DateText:
                     print(PlayerText)
                     matchLink = browser.find_element_by_xpath(
                         '//*[@id="matches"]/div[3]/div[3]/table/tbody/tr[{}]/td[2]/a'
