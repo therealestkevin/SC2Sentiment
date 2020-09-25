@@ -1,3 +1,5 @@
+from random import randint
+
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from selenium.common.exceptions import TimeoutException
@@ -190,11 +192,17 @@ def selenium_process_replay():
 
     curAllMaps = open(getcwd() + '/PlayerMatch/ValidMapRotationBackup.txt').readlines()
     remaining = len(curAllMaps)
-    if remaining < 1:
+
+    currentLine = OverallSentiment.objects.filter(terranSentimentCount=0).count()
+
+    if remaining <= currentLine - 1:
         return
 
-    curMap = curAllMaps[0]
-    open(getcwd() + '/PlayerMatch/ValidMapRotationBackup.txt', 'w').writelines(curAllMaps[1:])
+    curMap = curAllMaps[currentLine + 1]
+
+    print(curMap)
+
+    # open(getcwd() + '/PlayerMatch/ValidMapRotationBackup.txt', 'w').writelines(curAllMaps[1:])
 
     curMapLink = ""
     # browser = webdriver.Chrome(getcwd() + '/PlayerMatch/chromedriver', options=options)
@@ -253,6 +261,7 @@ def selenium_process_replay():
                     change = set(after) - set(before)
                     file_name = ""
                     loopCount = 0
+
                     while loopCount < 16 and len(change) == 0:
                         sleep(0.25)
                         after = listdir(getcwd() + '/PlayerMatch/TempReplays')
@@ -301,12 +310,14 @@ def selenium_process_replay():
         if 'none' in nextButton:
             isLast = True
 
-        # curRace = curRace[2: len(curRace) - 1]
+    OverallSentiment.objects.create(terranSentimentCount=0, terranSentimentOverall=0, zergSentimentCount=0,
+                                    zergSentimentOverall=0,
+                                    protossSentimentCoun=0, protossSentimentOverall=0)
+
+    # curRace = curRace[2: len(curRace) - 1]
     archive = None
     browser.close()
     new_name = str(uuid4())
     rename(getcwd() + '/PlayerMatch/TempReplays/', getcwd() + '/PlayerMatch/' + new_name)
     rmtree(getcwd() + '/PlayerMatch/' + new_name)
     mkdir(getcwd() + '/PlayerMatch/TempReplays')
-
-
